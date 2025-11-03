@@ -13,6 +13,11 @@
     
     <title>Kartik Nair</title>
     
+    <!-- Preload modern fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
     <!-- Preload critical CSS for faster rendering -->
     <link rel="preload" href="assets/css/styles.css" as="style">
     <link rel="preload" href="assets/css/conway.css" as="style">
@@ -30,6 +35,7 @@
                 </li>
             </ul>
             <div class="theme-toggle">
+                <span class="theme-label">Theme</span>
                 <input type="checkbox" id="theme-switch" class="theme-switch-input">
                 <label for="theme-switch" class="theme-switch-label">
                     <span class="theme-switch-slider"></span>
@@ -38,13 +44,20 @@
         </div>
     </nav>
 
+    <!-- Conway's Game of Life Canvas - Background Layer -->
+    <section class="game-section">
+        <canvas id="conway-canvas" class="game-canvas"></canvas>
+    </section>
+
     <!-- Main Content -->
     <main class="main-content">
         <section class="hero-section">
             <div class="content-container">
-                <h1 class="hero-title">Welcome</h1>
+                <h2 class="hero-title">Welcome</h2>
                 <p class="hero-description">
-                    I am Kartik, currently a first-year master's student in Machine Learning at Carnegie Mellon University. I'm part of <a href="https://nmboffi.github.io">Prof. Nick Boffi's group</a>.
+                    I am Kartik, currently a first-year master's student in Machine Learning at Carnegie Mellon University. 
+                    I'm part of <a href="https://nmboffi.github.io">Prof. Nick Boffi's group</a> where I work on with Flow Maps for generative models.
+
                     Previously, I completed my bachelor's degree in Computer Science and Engineering from IIT Bombay, where I worked on retrieval with <a href="https://abir-de.github.io">Prof. Abir De</a> and <a href="https://www.cse.iitb.ac.in/~soumen/">Prof. Soumen Chakrabarti</a>.
                 </p>
                 <p>
@@ -52,23 +65,20 @@
                 </p>
             </div>
         </section>
+    </main>
 
-        <!-- Conway's Game of Life Canvas -->
-        <section class="game-section">
-            <canvas id="conway-canvas" class="game-canvas"></canvas>
-            
-            <!-- Game Controls -->
-            <div class="game-controls">
-                <button id="play-pause-btn" class="control-btn play-pause-btn">
-                    <span class="btn-icon">⏸️</span>
-                </button>
-                <div id="speed-control" class="speed-control">
-                    <label for="speed-slider" class="speed-label">Speed</label>
-                    <input type="range" id="speed-slider" class="speed-slider" min="1" max="10" value="5">
-                </div>
-            </div>
+    <!-- Game Controls -->
+    <div class="game-controls">
+        <button id="play-pause-btn" class="control-btn play-pause-btn" aria-label="Play or Pause">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
+            </svg>
+        </button>
+        <div id="speed-control" class="speed-control">
+            <label for="speed-slider" class="speed-label" id="speed-label">1x</label>
+            <input type="range" id="speed-slider" class="speed-slider" min="0" max="100" value="50" step="1">
         </div>
-    </section>
+    </div>
 
     <!-- Social Links -->
     <footer class="footer">

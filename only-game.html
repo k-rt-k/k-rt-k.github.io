@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conway's Game of Life</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #0a0a0a;
+            overflow: hidden;
+        }
+
+        #conway-canvas {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+            background-color: #0a0a0a;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .control-btn {
+            width: 48px;
+            height: 48px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .control-btn:hover {
+            background: white;
+            border-color: rgba(0, 0, 0, 0.2);
+            transform: scale(1.05);
+        }
+
+        .btn-icon {
+            width: 20px;
+            height: 20px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="conway-canvas"></canvas>
+
+    <div class="controls">
+        <button id="play-pause-btn" class="control-btn">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
+            </svg>
+        </button>
+        <div id="speed-control" style="display: flex; gap: 10px; align-items: center;">
+            <input type="range" id="speed-slider" min="0" max="100" value="50" step="1" style="width: 150px;">
+            <span id="speed-label" style="color: white; font-family: monospace; min-width: 50px;">1.0x</span>
+        </div>
+    </div>
+
+    <script src="assets/js/conway-game.js"></script>
+</body>
+</html>

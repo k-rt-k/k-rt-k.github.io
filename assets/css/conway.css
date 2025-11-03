@@ -6,110 +6,6 @@
     image-rendering: crisp-edges;
 }
 
-/* Cell styling when paused (interactive mode) */
-.game-canvas.interactive {
-    cursor: crosshair;
-}
-
-.game-canvas.interactive:hover {
-    opacity: 0.9;
-}
-
-/* Animation for smooth transitions */
-.game-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.1);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    pointer-events: none;
-}
-
-.game-overlay.visible {
-    opacity: 1;
-}
-
-/* Grid visualization hints */
-.game-canvas.show-grid {
-    background-image: 
-        linear-gradient(var(--border) 1px, transparent 1px),
-        linear-gradient(90deg, var(--border) 1px, transparent 1px);
-    background-size: 10px 10px;
-}
-
-/* Performance optimization classes */
-.game-canvas.high-performance {
-    will-change: contents;
-    transform: translateZ(0);
-}
-
-/* Fullscreen mode */
-.game-section.fullscreen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 1000;
-    background: var(--bg-primary);
-}
-
-.game-section.fullscreen .game-canvas {
-    width: 100vw;
-    height: 100vh;
-}
-
-/* Loading state */
-.game-loading {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: var(--text-secondary);
-    font-size: 0.875rem;
-    z-index: 50;
-}
-
-/* Pattern selection UI (for future enhancement) */
-.pattern-selector {
-    position: fixed;
-    top: 50%;
-    left: 2rem;
-    transform: translateY(-50%);
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 1rem;
-    display: none;
-    z-index: 200;
-    box-shadow: 0 8px 32px var(--shadow);
-}
-
-.pattern-selector.visible {
-    display: block;
-}
-
-.pattern-button {
-    display: block;
-    width: 100%;
-    padding: 0.5rem;
-    margin: 0.25rem 0;
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    color: var(--text-primary);
-    cursor: pointer;
-    transition: var(--transition);
-}
-
-.pattern-button:hover {
-    background: var(--accent);
-    color: white;
-}
-
 /* Mobile specific game styles */
 @media (max-width: 768px) {
     .game-canvas {
@@ -120,7 +16,6 @@
         -webkit-overflow-scrolling: touch;
     }
     
-    /* Ensure smooth scrolling on mobile */
     .game-section::-webkit-scrollbar {
         display: none;
     }
