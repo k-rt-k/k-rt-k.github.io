@@ -156,6 +156,12 @@ body {
     padding-top: 60px;
     min-height: 100vh;
     position: relative;
+    z-index: 2;
+    transition: z-index 0s;
+}
+
+.main-content.grid-clickable {
+    z-index: 1;
 }
 
 .hero-section {
@@ -169,6 +175,11 @@ body {
     align-items: center;
     position: relative;
     z-index: 2;
+    transition: z-index 0s;
+}
+
+.hero-section.grid-clickable {
+    z-index: 1;
 }
 
 .content-container {
@@ -181,17 +192,21 @@ body {
     border-radius: 24px;
     position: relative;
     z-index: 3;
-    /* pointer-events controlled dynamically by JavaScript based on game state */
+    transition: z-index 0s;
+}
+
+.content-container.grid-clickable {
+    z-index: 1;
 }
 
 [data-theme="light"] .content-container {
-    background-color: rgba(253, 250, 245, 0.60);
+    background-color: rgba(253, 250, 245, 0.10);
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
 }
 
 [data-theme="dark"] .content-container,
 :root:not([data-theme]) .content-container {
-    background-color: rgba(10, 10, 10, 0.60);
+    background-color: rgba(10, 10, 10, 0.10);
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
 }
 
@@ -232,6 +247,11 @@ body {
     height: 100vh;
     overflow: hidden;
     z-index: 0;
+    transition: z-index 0s;
+}
+
+.game-section.grid-clickable {
+    z-index: 5;
 }
 
 .game-canvas {

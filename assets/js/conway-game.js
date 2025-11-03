@@ -113,10 +113,9 @@ class ConwayGameOfLife {
             throw new Error('Canvas element not found!');
         }
         
-        // Use willReadFrequently hint for better performance with getImageData
         this.ctx = this.canvas.getContext('2d', { 
-            alpha: CONFIG.CANVAS.ALPHA_ENABLED,  // No transparency needed, saves memory
-            desynchronized: CONFIG.CANVAS.DESYNCHRONIZED  // Reduces latency
+            alpha: CONFIG.CANVAS.ALPHA_ENABLED,
+            desynchronized: CONFIG.CANVAS.DESYNCHRONIZED
         });
         
         this.playPauseBtn = document.getElementById(CONFIG.ELEMENTS.PLAY_PAUSE_BTN);
@@ -160,22 +159,14 @@ class ConwayGameOfLife {
         this.initializeGrid();
         this.setupEventListeners();
         this.loadInitialPattern();
-        this.updateThemeColors(); // Initialize theme colors
+        this.updateThemeColors();
         
-        // Set initial canvas state
         this.canvas.classList.add(CONFIG.CLASSES.PLAYING);
         this.canvas.style.cursor = CONFIG.CURSORS.DEFAULT;
         this.needsRedraw = true;
-        
-        // Set initial pointer-events state (game starts playing, so text is clickable)
-        const contentContainer = document.querySelector('.content-container');
-        if (contentContainer) {
-            contentContainer.style.pointerEvents = 'auto';
-        }
-        
+
         this.gameLoop();
         
-        // Theme change listener with bound function for cleanup
         this.boundThemeChange = () => {
             this.updateThemeColors();
             this.needsRedraw = true;
@@ -239,8 +230,6 @@ class ConwayGameOfLife {
     }
 
     initializeGrid() {
-        // More efficient grid initialization using typed arrays for better performance
-        // Use regular arrays for simplicity but avoid map/fill combo
         this.grid = new Array(this.rows);
         this.nextGrid = new Array(this.rows);
         
@@ -403,7 +392,6 @@ class ConwayGameOfLife {
         const col = Math.floor(x / this.cellSize);
         const row = Math.floor(y / this.cellSize);
 
-        // Security: Validate coordinates are within bounds
         if (row >= 0 && row < this.rows && col >= 0 && col < this.cols) {
             this.grid[row][col] = !this.grid[row][col];
             this.needsRedraw = true;
@@ -413,44 +401,39 @@ class ConwayGameOfLife {
     togglePlayPause() {
         this.isPlaying = !this.isPlaying;
         
-        // Update button icon - switch between pause and play SVG
         const icon = this.playPauseBtn.querySelector(CONFIG.ELEMENTS.BTN_ICON);
         if (icon) {
-            if (this.isPlaying) {
-                // Pause icon (two vertical bars)
-                icon.innerHTML = CONFIG.ICONS.PAUSE;
-            } else {
-                // Play icon (triangle)
-                icon.innerHTML = CONFIG.ICONS.PLAY;
-            }
+            icon.innerHTML = this.isPlaying ? CONFIG.ICONS.PAUSE : CONFIG.ICONS.PLAY;
         }
         
-        // Update canvas class for styling
         this.canvas.classList.toggle(CONFIG.CLASSES.PAUSED, !this.isPlaying);
         this.canvas.classList.toggle(CONFIG.CLASSES.PLAYING, this.isPlaying);
-        
-        // Update cursor style
         this.canvas.style.cursor = this.isPlaying ? CONFIG.CURSORS.DEFAULT : CONFIG.CURSORS.CROSSHAIR;
         
-        // Toggle pointer-events on content container
-        // When paused: grid is clickable (content container blocks)
-        // When playing: text is clickable (content container captures events)
+        const gameSection = this.canvas.parentElement;
+        if (gameSection) {
+            gameSection.classList.toggle('grid-clickable', !this.isPlaying);
+        }
+        
+        const mainContent = document.querySelector('.main-content');
+        if (mainContent) {
+            mainContent.classList.toggle('grid-clickable', !this.isPlaying);
+        }
+        
+        const heroSection = document.querySelector('.hero-section');
+        if (heroSection) {
+            heroSection.classList.toggle('grid-clickable', !this.isPlaying);
+        }
+        
         const contentContainer = document.querySelector('.content-container');
         if (contentContainer) {
-            if (this.isPlaying) {
-                // Playing: content container should capture clicks (text is clickable)
-                contentContainer.style.pointerEvents = 'auto';
-            } else {
-                // Paused: content container should not capture clicks (grid is clickable)
-                contentContainer.style.pointerEvents = 'none';
-            }
+            contentContainer.classList.toggle('grid-clickable', !this.isPlaying);
         }
         
         this.needsRedraw = true;
     }
 
     updateThemeColors() {
-        // Cache theme colors to avoid repeated DOM queries
         const theme = document.documentElement.hasAttribute(CONFIG.ATTRIBUTES.THEME) ? 'light' : 'dark';
         this.currentTheme = theme;
         
@@ -464,9 +447,7 @@ class ConwayGameOfLife {
     }
 
     updateGrid() {
-        // Conway's Game of Life rules with optimized neighbor counting
-        // Pre-calculate neighbor counts to avoid redundant calculations
-        this.gridChanged = false; // Track if any cell changed
+        this.gridChanged = false;
         
         for (let i = 0; i < this.rows; i++) {
             for (let j = 0; j < this.cols; j++) {
