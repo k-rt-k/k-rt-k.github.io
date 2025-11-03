@@ -1,0 +1,422 @@
+/* CSS Custom Properties for Theme Management */
+:root {
+    --bg-primary: #0a0a0a;
+    --bg-secondary: #1a1a1a;
+    --bg-tertiary: #2a2a2a;
+    --text-primary: #ffffff;
+    --text-secondary: #b3b3b3;
+    --text-hover: #ffffff;
+    --accent: #4a9eff;
+    --border: #333333;
+    --shadow: rgba(0, 0, 0, 0.5);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="light"] {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --bg-tertiary: #e9ecef;
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+    --text-hover: #000000;
+    --accent: #0066cc;
+    --border: #dee2e6;
+    --shadow: rgba(0, 0, 0, 0.1);
+}
+
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    transition: var(--transition);
+    overflow-x: hidden;
+}
+
+/* Navigation Styles */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    /* Performance: Use will-change sparingly and only when needed */
+    contain: layout style;
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 60px;
+}
+
+.nav-menu {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+}
+
+.nav-item {
+    position: relative;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: var(--transition);
+    position: relative;
+}
+
+.nav-link:hover {
+    color: var(--text-hover);
+    background-color: var(--bg-tertiary);
+}
+
+/* Theme Toggle Styles */
+.theme-toggle {
+    display: flex;
+    align-items: center;
+}
+
+.theme-switch-input {
+    display: none;
+}
+
+.theme-switch-label {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+    background-color: var(--bg-tertiary);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: var(--transition);
+    border: 1px solid var(--border);
+}
+
+.theme-switch-slider {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    background-color: var(--text-primary);
+    border-radius: 50%;
+    transition: var(--transition);
+}
+
+.theme-switch-input:checked + .theme-switch-label .theme-switch-slider {
+    transform: translateX(24px);
+}
+
+.theme-switch-input:checked + .theme-switch-label {
+    background-color: var(--accent);
+}
+
+/* Main Content */
+.main-content {
+    padding-top: 60px;
+    min-height: 100vh;
+}
+
+.hero-section {
+    padding: 4rem 2rem;
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.content-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.hero-title {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+}
+
+.hero-description {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 3rem;
+}
+
+/* Style links within description */
+.hero-description a {
+    color: var(--accent);
+    text-decoration: none;
+    transition: var(--transition);
+    border-bottom: 1px solid transparent;
+}
+
+.hero-description a:hover {
+    border-bottom-color: var(--accent);
+}
+
+/* Game Section */
+.game-section {
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 60px);
+    overflow: hidden;
+}
+
+.game-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    background-color: var(--bg-primary);
+    cursor: crosshair;
+    transition: var(--transition);
+}
+
+.game-canvas.paused {
+    z-index: 10;
+}
+
+.game-canvas.playing {
+    z-index: 1;
+}
+
+/* Game Controls */
+.game-controls {
+    position: fixed;
+    bottom: 2rem;
+    left: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    z-index: 100;
+}
+
+.control-btn {
+    width: 50px;
+    height: 50px;
+    border: none;
+    border-radius: 50%;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 12px var(--shadow);
+    /* Performance: Isolate transform animations */
+    will-change: transform;
+    transform: translateZ(0);
+}
+
+.control-btn:hover {
+    background-color: var(--bg-tertiary);
+    transform: translateY(-2px) translateZ(0);
+}
+
+.control-btn:active {
+    transform: translateY(0) translateZ(0);
+}
+
+.speed-control {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: var(--bg-secondary);
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 12px var(--shadow);
+    transition: var(--transition);
+}
+
+.speed-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.speed-slider {
+    width: 80px;
+    height: 4px;
+    background: var(--bg-tertiary);
+    outline: none;
+    border-radius: 2px;
+    cursor: pointer;
+}
+
+.speed-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--accent);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.speed-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: var(--accent);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+}
+
+/* Footer and Social Links */
+.footer {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 100;
+}
+
+.social-links {
+    display: flex;
+    gap: 1rem;
+}
+
+.social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: var(--transition);
+    box-shadow: 0 4px 12px var(--shadow);
+    /* Performance: Isolate transform animations */
+    will-change: transform;
+    transform: translateZ(0);
+}
+
+.social-link:hover {
+    color: var(--text-primary);
+    background-color: var(--bg-tertiary);
+    transform: translateY(-2px) scale(1.1) translateZ(0);
+}
+
+.social-icon {
+    width: 20px;
+    height: 20px;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+    .nav-container {
+        padding: 0 1rem;
+    }
+
+    .hero-section {
+        padding: 2rem 1rem;
+    }
+
+    .game-controls {
+        bottom: 1rem;
+        left: 1rem;
+    }
+
+    .footer {
+        bottom: 1rem;
+        right: 1rem;
+    }
+
+    .speed-control {
+        position: absolute;
+        bottom: 60px;
+        left: 0;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(10px);
+        transition: var(--transition);
+    }
+
+    .speed-control.visible {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    .social-links {
+        flex-direction: column;
+    }
+
+    .game-canvas {
+        height: calc(100vh - 60px);
+    }
+}
+
+/* Mobile - larger grid area */
+@media (max-width: 768px) {
+    .game-section {
+        height: calc(150vh - 60px);
+        overflow-y: scroll;
+        overflow-x: scroll;
+    }
+
+    .game-canvas {
+        width: 150vw;
+        height: 150vh;
+        min-width: 100%;
+        min-height: calc(100vh - 60px);
+    }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Focus styles for keyboard navigation */
+button:focus,
+input:focus,
+a:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    :root {
+        --border: #666666;
+    }
+    
+    [data-theme="light"] {
+        --border: #333333;
+    }
+}
