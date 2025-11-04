@@ -18,6 +18,7 @@ const CONFIG = {
     // Game Settings
     GAME: {
         CELL_SIZE: 12,
+        CELL_SIZE_MOBILE: 20, // Larger cells for mobile
         INITIAL_UPDATE_INTERVAL: 100, // milliseconds
         INITIAL_RANDOM_CELLS: 64
     },
@@ -36,7 +37,10 @@ const CONFIG = {
     MOBILE: {
         BREAKPOINT: 768, // pixels
         CANVAS_SCALE: 1.5,
-        LONG_PRESS_DURATION: 500 // milliseconds
+        LONG_PRESS_DURATION: 500, // milliseconds
+        MIN_ZOOM: 0.5,
+        MAX_ZOOM: 3.0,
+        ZOOM_STEP: 0.1
     },
     
     // Theme Colors
@@ -147,6 +151,14 @@ class ConwayGameOfLife {
         this.isLongPress = false;
         this.longPressTimer = null;
         
+        // Mobile zoom support
+        this.zoomLevel = 1.0;
+        this.isPinching = false;
+        this.lastPinchDistance = 0;
+        this.transformOriginX = 50; // percentage
+        this.transformOriginY = 50; // percentage
+        this.pinchStartTime = 0;
+        
         // Store bound functions for cleanup
         this.boundResizeCanvas = null;
         this.boundThemeChange = null;
@@ -175,6 +187,9 @@ class ConwayGameOfLife {
     }
 
     setupCanvas() {
+        // Set cell size based on device
+        this.cellSize = this.isMobile ? CONFIG.GAME.CELL_SIZE_MOBILE : CONFIG.GAME.CELL_SIZE;
+        
         // Set initial canvas dimensions immediately (before setting up resize handler)
         const container = this.canvas.parentElement;
         const containerRect = container.getBoundingClientRect();
@@ -198,6 +213,10 @@ class ConwayGameOfLife {
         this.boundResizeCanvas = () => {
             clearTimeout(resizeTimeout);
             resizeTimeout = setTimeout(() => {
+                // Update mobile detection
+                this.isMobile = window.innerWidth <= CONFIG.MOBILE.BREAKPOINT;
+                this.cellSize = this.isMobile ? CONFIG.GAME.CELL_SIZE_MOBILE : CONFIG.GAME.CELL_SIZE;
+                
                 const container = this.canvas.parentElement;
                 const containerRect = container.getBoundingClientRect();
                 
@@ -300,6 +319,15 @@ class ConwayGameOfLife {
 
         // Canvas interaction
         this.canvas.addEventListener('click', this.handleCanvasClick.bind(this));
+        
+        // Touch support for mobile
+        if (this.isMobile) {
+            this.canvas.addEventListener('touchstart', this.handleCanvasTouch.bind(this), { passive: false });
+            
+            // Pinch-to-zoom support
+            this.canvas.addEventListener('touchmove', this.handlePinchZoom.bind(this), { passive: false });
+            this.canvas.addEventListener('touchend', this.handleTouchEnd.bind(this), { passive: false });
+        }
         
         // Mobile long press for speed control
         if (this.isMobile) {
@@ -424,13 +452,126 @@ class ConwayGameOfLife {
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
 
-        const col = Math.floor(x / this.cellSize);
-        const row = Math.floor(y / this.cellSize);
+        // Account for canvas scaling on mobile
+        const scaleX = this.canvas.width / rect.width;
+        const scaleY = this.canvas.height / rect.height;
+
+        const canvasX = x * scaleX;
+        const canvasY = y * scaleY;
+
+        const col = Math.floor(canvasX / this.cellSize);
+        const row = Math.floor(canvasY / this.cellSize);
 
         if (row >= 0 && row < this.rows && col >= 0 && col < this.cols) {
             this.grid[row][col] = !this.grid[row][col];
             this.needsRedraw = true;
         }
+    }
+
+    handleCanvasTouch(e) {
+        if (this.isPlaying) return;
+        
+        // Prevent default behavior (scrolling, zooming) when paused
+        if (!this.isPlaying) {
+            e.preventDefault();
+        }
+        
+        // Don't handle clicks immediately after a pinch gesture
+        const timeSincePinch = Date.now() - this.pinchStartTime;
+        const recentlyPinched = timeSincePinch < 300; // 300ms grace period
+        
+        // Handle single touch for cell toggling
+        if (e.touches.length === 1 && !this.isPinching && !recentlyPinched) {
+            const touch = e.touches[0];
+            const rect = this.canvas.getBoundingClientRect();
+            
+            // Get touch coordinates relative to canvas
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
+            
+            // Account for canvas scaling
+            const scaleX = this.canvas.width / rect.width;
+            const scaleY = this.canvas.height / rect.height;
+            
+            const canvasX = x * scaleX;
+            const canvasY = y * scaleY;
+            
+            const col = Math.floor(canvasX / this.cellSize);
+            const row = Math.floor(canvasY / this.cellSize);
+            
+            if (row >= 0 && row < this.rows && col >= 0 && col < this.cols) {
+                this.grid[row][col] = !this.grid[row][col];
+                this.needsRedraw = true;
+            }
+        }
+        // Handle two-finger pinch for zooming
+        else if (e.touches.length === 2) {
+            this.isPinching = true;
+            this.pinchStartTime = Date.now();
+            
+            // Calculate center point of pinch
+            const rect = this.canvas.getBoundingClientRect();
+            const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+            const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+            
+            // Convert to percentage relative to canvas
+            this.transformOriginX = ((centerX - rect.left) / rect.width) * 100;
+            this.transformOriginY = ((centerY - rect.top) / rect.height) * 100;
+            
+            const distance = this.getTouchDistance(e.touches[0], e.touches[1]);
+            this.lastPinchDistance = distance;
+        }
+    }
+
+    handlePinchZoom(e) {
+        if (!this.isPinching || e.touches.length !== 2) return;
+        
+        e.preventDefault();
+        
+        const distance = this.getTouchDistance(e.touches[0], e.touches[1]);
+        
+        if (this.lastPinchDistance > 0) {
+            const delta = distance - this.lastPinchDistance;
+            const zoomChange = delta * 0.005; // Sensitivity factor
+            
+            const newZoom = Math.max(
+                CONFIG.MOBILE.MIN_ZOOM,
+                Math.min(CONFIG.MOBILE.MAX_ZOOM, this.zoomLevel + zoomChange)
+            );
+            
+            if (newZoom !== this.zoomLevel) {
+                this.zoomLevel = newZoom;
+                this.applyZoom();
+            }
+        }
+        
+        this.lastPinchDistance = distance;
+    }
+
+    handleTouchEnd(e) {
+        if (e.touches.length < 2) {
+            this.isPinching = false;
+            this.lastPinchDistance = 0;
+        }
+    }
+
+    getTouchDistance(touch1, touch2) {
+        const dx = touch2.clientX - touch1.clientX;
+        const dy = touch2.clientY - touch1.clientY;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    applyZoom() {
+        if (!this.isMobile) return;
+        
+        const gameSection = this.canvas.parentElement;
+        if (gameSection) {
+            this.canvas.style.transform = `scale(${this.zoomLevel})`;
+            // Use the pinch center point as transform origin
+            this.canvas.style.transformOrigin = `${this.transformOriginX}% ${this.transformOriginY}%`;
+        }
+        
+        this.needsRedraw = true;
     }
 
     togglePlayPause() {
@@ -444,6 +585,14 @@ class ConwayGameOfLife {
         this.canvas.classList.toggle(CONFIG.CLASSES.PAUSED, !this.isPlaying);
         this.canvas.classList.toggle(CONFIG.CLASSES.PLAYING, this.isPlaying);
         this.canvas.style.cursor = this.isPlaying ? CONFIG.CURSORS.DEFAULT : CONFIG.CURSORS.CROSSHAIR;
+        
+        // Reset zoom when playing starts
+        if (this.isPlaying && this.isMobile && this.zoomLevel !== 1.0) {
+            this.zoomLevel = 1.0;
+            this.transformOriginX = 50;
+            this.transformOriginY = 50;
+            this.applyZoom();
+        }
         
         const gameSection = this.canvas.parentElement;
         if (gameSection) {

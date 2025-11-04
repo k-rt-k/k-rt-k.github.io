@@ -255,8 +255,7 @@ body {
 }
 
 .game-canvas {
-    width: 100%;
-    height: 100%;
+    /* Don't force width/height - let canvas use its natural dimensions */
     display: block;
     background-color: var(--bg-primary);
     cursor: default;
@@ -532,13 +531,25 @@ body {
         height: calc(150vh - 60px);
         overflow-y: scroll;
         overflow-x: scroll;
+        -webkit-overflow-scrolling: touch;
+        /* Center the scrollable area initially */
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+    }
+    
+    .game-section.grid-clickable {
+        /* Allow pinch-to-zoom when paused */
+        touch-action: pinch-zoom;
     }
 
     .game-canvas {
-        width: 150vw;
-        height: 150vh;
-        min-width: 100%;
-        min-height: calc(100vh - 60px);
+        /* Don't set width/height in CSS - let canvas element use its natural dimensions */
+        /* The JavaScript sets canvas.width and canvas.height in pixels */
+        touch-action: none; /* Prevent default touch behaviors */
+        transition: transform 0.2s ease-out;
+        /* Position canvas to show center area */
+        margin-left: -25vw;
     }
 }
 
