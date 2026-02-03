@@ -62,7 +62,13 @@ class ThemeManager {
         
         // Event listeners
         this.themeSwitch.addEventListener('change', this.handleThemeToggle.bind(this));
-        this.prefersDark.addEventListener('change', this.handleSystemThemeChange.bind(this));
+
+        // Safari < 14 fallback for matchMedia
+        if (this.prefersDark.addEventListener) {
+            this.prefersDark.addEventListener('change', this.handleSystemThemeChange.bind(this));
+        } else if (this.prefersDark.addListener) {
+            this.prefersDark.addListener(this.handleSystemThemeChange.bind(this));
+        }
         
         // Smooth transition after initial load
         setTimeout(() => {

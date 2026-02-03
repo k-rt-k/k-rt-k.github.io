@@ -36,11 +36,10 @@ const CONFIG = {
     // Mobile Settings
     MOBILE: {
         BREAKPOINT: 768, // pixels
-        CANVAS_SCALE: 1.5,
+        CANVAS_SCALE: 1.2,
         LONG_PRESS_DURATION: 500, // milliseconds
         MIN_ZOOM: 0.5,
-        MAX_ZOOM: 3.0,
-        ZOOM_STEP: 0.1
+        MAX_ZOOM: 3.0
     },
     
     // Theme Colors
@@ -100,8 +99,8 @@ const CONFIG = {
         CROSSHAIR: 'crosshair'
     },
     
-    // Random Cell Probability
-    RANDOM_CELL_THRESHOLD: 0.7,
+    // Random cell spawn chance (0.3 = 30% chance cell is alive)
+    RANDOM_CELL_ALIVE_CHANCE: 0.3,
     
     // Data Attributes
     ATTRIBUTES: {
@@ -187,13 +186,39 @@ class ConwayGameOfLife {
     }
 
     setupCanvas() {
+        this.updateCanvasDimensions();
+
+        // Debounce resize handler for better performance
+        let resizeTimeout;
+        this.boundResizeCanvas = () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                // Update mobile detection
+                this.isMobile = window.innerWidth <= CONFIG.MOBILE.BREAKPOINT;
+
+                const oldGrid = this.grid;
+                this.updateCanvasDimensions();
+
+                // Recreate grids with new dimensions and preserve data
+                if (oldGrid) {
+                    this.initializeGrid();
+                    this.transferGridData(oldGrid);
+                }
+
+                this.needsRedraw = true;
+            }, CONFIG.PERFORMANCE.RESIZE_DEBOUNCE);
+        };
+
+        window.addEventListener('resize', this.boundResizeCanvas);
+    }
+
+    updateCanvasDimensions() {
         // Set cell size based on device
         this.cellSize = this.isMobile ? CONFIG.GAME.CELL_SIZE_MOBILE : CONFIG.GAME.CELL_SIZE;
-        
-        // Set initial canvas dimensions immediately (before setting up resize handler)
+
         const container = this.canvas.parentElement;
         const containerRect = container.getBoundingClientRect();
-        
+
         // Set canvas size based on container
         if (this.isMobile) {
             // Larger scrollable area for mobile
@@ -203,49 +228,10 @@ class ConwayGameOfLife {
             this.canvas.width = containerRect.width;
             this.canvas.height = containerRect.height;
         }
-        
+
         // Calculate grid dimensions
         this.cols = Math.floor(this.canvas.width / this.cellSize);
         this.rows = Math.floor(this.canvas.height / this.cellSize);
-        
-        // Debounce resize handler for better performance
-        let resizeTimeout;
-        this.boundResizeCanvas = () => {
-            clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(() => {
-                // Update mobile detection
-                this.isMobile = window.innerWidth <= CONFIG.MOBILE.BREAKPOINT;
-                this.cellSize = this.isMobile ? CONFIG.GAME.CELL_SIZE_MOBILE : CONFIG.GAME.CELL_SIZE;
-                
-                const container = this.canvas.parentElement;
-                const containerRect = container.getBoundingClientRect();
-                
-                // Set canvas size based on container
-                if (this.isMobile) {
-                    // Larger scrollable area for mobile
-                    this.canvas.width = window.innerWidth * CONFIG.MOBILE.CANVAS_SCALE;
-                    this.canvas.height = window.innerHeight * CONFIG.MOBILE.CANVAS_SCALE;
-                } else {
-                    this.canvas.width = containerRect.width;
-                    this.canvas.height = containerRect.height;
-                }
-                
-                // Calculate grid dimensions
-                this.cols = Math.floor(this.canvas.width / this.cellSize);
-                this.rows = Math.floor(this.canvas.height / this.cellSize);
-                
-                // Recreate grids with new dimensions
-                if (this.grid) {
-                    const oldGrid = this.grid;
-                    this.initializeGrid();
-                    this.transferGridData(oldGrid);
-                }
-                
-                this.needsRedraw = true;
-            }, CONFIG.PERFORMANCE.RESIZE_DEBOUNCE);
-        };
-
-        window.addEventListener('resize', this.boundResizeCanvas);
     }
 
     initializeGrid() {
@@ -319,18 +305,12 @@ class ConwayGameOfLife {
 
         // Canvas interaction
         this.canvas.addEventListener('click', this.handleCanvasClick.bind(this));
-        
-        // Touch support for mobile
+
+        // Mobile-specific setup: touch events and long press controls
         if (this.isMobile) {
             this.canvas.addEventListener('touchstart', this.handleCanvasTouch.bind(this), { passive: false });
-            
-            // Pinch-to-zoom support
             this.canvas.addEventListener('touchmove', this.handlePinchZoom.bind(this), { passive: false });
             this.canvas.addEventListener('touchend', this.handleTouchEnd.bind(this), { passive: false });
-        }
-        
-        // Mobile long press for speed control
-        if (this.isMobile) {
             this.setupMobileControls();
         }
 
@@ -372,53 +352,18 @@ class ConwayGameOfLife {
     }
 
     loadInitialPattern() {
-        const patterns = [
-            { // Gosper Glider Gun - A "gun" that produces gliders.
-            name: 'Glider Gun',
-            pattern: [
-                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1],
-                [0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1],
-                [1,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                [1,1,0,0,0,0,0,0,0,0,1,0,0,0,1,0,1,1,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-            ]
-            },
-            // { // Pulsar - A period-3 oscillator.
-            // name: 'Pulsar',
-            // pattern: [
-            //     [0,0,1,1,1,0,0,0,1,1,1,0,0],
-            //     [0,0,0,0,0,0,0,0,0,0,0,0,0],
-            //     [1,0,0,0,0,1,0,1,0,0,0,0,1],
-            //     [1,0,0,0,0,1,0,1,0,0,0,0,1],
-            //     [1,0,0,0,0,1,0,1,0,0,0,0,1],
-            //     [0,0,1,1,1,0,0,0,1,1,1,0,0],
-            //     [0,0,0,0,0,0,0,0,0,0,0,0,0],
-            //     [0,0,1,1,1,0,0,0,1,1,1,0,0],
-            //     [1,0,0,0,0,1,0,1,0,0,0,0,1],
-            //     [1,0,0,0,0,1,0,1,0,0,0,0,1],
-            //     [1,0,0,0,0,1,0,1,0,0,0,0,1],
-            //     [0,0,0,0,0,0,0,0,0,0,0,0,0],
-            //     [0,0,1,1,1,0,0,0,1,1,1,0,0]
-            // ]
-            // },
-            // { // Pentadecathlon - A period-15 oscillator.
-            // name: 'Pentadecathlon',
-            // pattern: [
-            //     [0,1,1,0,0,0,0,1,1,0],
-            //     [1,0,0,1,0,0,1,0,0,1],
-            //     [1,0,0,1,0,0,1,0,0,1],
-            //     [0,1,1,0,0,0,0,1,1,0]
-            // ]
-            // },
+        // Gosper Glider Gun - produces gliders indefinitely
+        const pattern = [
+            [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1],
+            [0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1],
+            [1,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+            [1,1,0,0,0,0,0,0,0,0,1,0,0,0,1,0,1,1,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
         ];
-
-        // Select a random pattern
-        const selectedPatternData = patterns[Math.floor(Math.random() * patterns.length)];
-        const pattern = selectedPatternData.pattern;
 
         // Place the pattern in the center
         const startRow = Math.floor(this.rows / 2) - Math.floor(pattern.length / 2);
@@ -441,7 +386,7 @@ class ConwayGameOfLife {
         for (let i = 0; i < count; i++) {
             const row = Math.floor(Math.random() * this.rows);
             const col = Math.floor(Math.random() * this.cols);
-            this.grid[row][col] = Math.random() > CONFIG.RANDOM_CELL_THRESHOLD;
+            this.grid[row][col] = Math.random() < CONFIG.RANDOM_CELL_ALIVE_CHANCE;
         }
     }
 
@@ -581,6 +526,10 @@ class ConwayGameOfLife {
         if (icon) {
             icon.innerHTML = this.isPlaying ? CONFIG.ICONS.PAUSE : CONFIG.ICONS.PLAY;
         }
+
+        // Update ARIA for accessibility
+        this.playPauseBtn.setAttribute('aria-label', this.isPlaying ? 'Pause game' : 'Play game');
+        this.playPauseBtn.setAttribute('aria-pressed', this.isPlaying);
         
         this.canvas.classList.toggle(CONFIG.CLASSES.PAUSED, !this.isPlaying);
         this.canvas.classList.toggle(CONFIG.CLASSES.PLAYING, this.isPlaying);

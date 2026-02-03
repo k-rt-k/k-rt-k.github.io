@@ -8,14 +8,12 @@
 
 /* Mobile specific game styles */
 @media (max-width: 768px) {
-    .game-canvas {
-        touch-action: pan-x pan-y;
-    }
-    
+    /* touch-action is set in styles.css to 'none' for cell toggling */
+
     .game-section {
         -webkit-overflow-scrolling: touch;
     }
-    
+
     .game-section::-webkit-scrollbar {
         display: none;
     }

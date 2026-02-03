@@ -116,39 +116,67 @@ body {
     font-weight: 500;
 }
 
+/* Visually hidden but keyboard accessible */
 .theme-switch-input {
-    display: none;
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+}
+
+/* Focus styles for keyboard navigation */
+.theme-switch-input:focus-visible + .theme-switch-label {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
 }
 
 .theme-switch-label {
     position: relative;
-    display: inline-block;
-    width: 50px;
-    height: 24px;
-    background-color: var(--bg-tertiary);
-    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 44px;
+    background-color: transparent;
+    border-radius: 22px;
     cursor: pointer;
     transition: var(--transition);
+}
+
+/* The visible toggle track */
+.theme-switch-label::before {
+    content: '';
+    position: absolute;
+    width: 50px;
+    height: 26px;
+    background-color: var(--bg-tertiary);
+    border-radius: 13px;
     border: 1px solid var(--border);
+    transition: var(--transition);
+}
+
+.theme-switch-input:checked + .theme-switch-label::before {
+    background-color: var(--accent);
 }
 
 .theme-switch-slider {
     position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 18px;
-    height: 18px;
+    top: 50%;
+    left: 4px;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
     background-color: var(--text-primary);
-    border-radius: 9px;
+    border-radius: 10px;
     transition: var(--transition);
+    z-index: 1;
 }
 
 .theme-switch-input:checked + .theme-switch-label .theme-switch-slider {
-    transform: translateX(24px);
-}
-
-.theme-switch-input:checked + .theme-switch-label {
-    background-color: var(--accent);
+    transform: translateY(-50%) translateX(26px);
 }
 
 /* Main Content */
@@ -229,13 +257,15 @@ body {
 /* Style links within description */
 .hero-description a {
     color: var(--accent);
-    text-decoration: none;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
     transition: var(--transition);
-    border-bottom: 1px solid transparent;
 }
 
 .hero-description a:hover {
-    border-bottom-color: var(--accent);
+    text-decoration-thickness: 2px;
+    opacity: 0.85;
 }
 
 /* Game Section */
@@ -345,30 +375,38 @@ body {
 }
 
 .speed-slider {
-    width: 80px;
-    height: 4px;
+    width: 100px;
+    height: 6px;
     background: var(--border);
     outline: none;
-    border-radius: 2px;
+    border-radius: 3px;
     cursor: pointer;
 }
 
 .speed-slider::-webkit-slider-thumb {
     appearance: none;
-    width: 16px;
-    height: 16px;
+    width: 24px;
+    height: 24px;
     background: var(--text-primary);
     border-radius: 50%;
     cursor: pointer;
 }
 
 .speed-slider::-moz-range-thumb {
-    width: 16px;
-    height: 16px;
+    width: 24px;
+    height: 24px;
     background: var(--text-primary);
     border-radius: 50%;
     cursor: pointer;
     border: none;
+}
+
+.speed-slider:focus::-webkit-slider-thumb {
+    box-shadow: 0 0 0 3px var(--accent);
+}
+
+.speed-slider:focus::-moz-range-thumb {
+    box-shadow: 0 0 0 3px var(--accent);
 }
 
 /* Footer and Social Links */
@@ -407,8 +445,15 @@ body {
 }
 
 .social-icon {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
+}
+
+/* Ensure minimum touch target */
+.social-link {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 4px;
 }
 
 /* Mobile Styles */
@@ -454,16 +499,10 @@ body {
         position: absolute;
         bottom: 60px;
         left: 0;
-        opacity: 0;
-        visibility: hidden;
-        transform: translateY(10px);
-        transition: var(--transition);
-    }
-
-    .speed-control.visible {
         opacity: 1;
         visibility: visible;
         transform: translateY(0);
+        min-width: 140px;
     }
 
     .social-links {
