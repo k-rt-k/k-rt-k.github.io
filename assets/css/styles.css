@@ -207,6 +207,20 @@ body {
     opacity: 0.85;
 }
 
+/* Inline citations */
+.cite {
+    font-size: 0.85em;
+    text-decoration: none;
+    color: var(--accent);
+    vertical-align: super;
+    line-height: 0;
+    cursor: pointer;
+}
+
+.cite:hover {
+    text-decoration: underline;
+}
+
 /* Game Section */
 .game-section {
     position: fixed;
