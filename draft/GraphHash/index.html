@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="title" content="GHash: Exchangeability of GNN Representations with Applications to Graph Retrieval">
+  <meta name="description" content="GHash discovers exchangeability in GNN embeddings and uses it for efficient locality-sensitive hashing of graphs.">
+  <meta name="keywords" content="graph neural networks, exchangeability, locality-sensitive hashing, graph retrieval, graph similarity">
+  <meta name="author" content="Kartik Nair, Indradyumna Roy, Soumen Chakrabarti, Anirban Dasgupta, Abir De">
+  <meta name="robots" content="index, follow">
+
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="GHash: Exchangeability of GNN Representations with Applications to Graph Retrieval">
+  <meta property="og:description" content="GHash discovers exchangeability in GNN embeddings and uses it for efficient locality-sensitive hashing of graphs.">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="GHash: Exchangeability of GNN Representations with Applications to Graph Retrieval">
+  <meta name="twitter:description" content="GHash discovers exchangeability in GNN embeddings and uses it for efficient locality-sensitive hashing of graphs.">
+
+  <meta name="citation_title" content="Exchangeability of GNN Representations with Applications to Graph Retrieval">
+  <meta name="citation_author" content="Nair, Kartik">
+  <meta name="citation_author" content="Roy, Indradyumna">
+  <meta name="citation_author" content="Chakrabarti, Soumen">
+  <meta name="citation_author" content="Dasgupta, Anirban">
+  <meta name="citation_author" content="De, Abir">
+  <meta name="citation_publication_date" content="2026">
+  <meta name="citation_conference_title" content="ICLR 2026">
+
+  <title>GHash: Exchangeability of GNN Representations with Applications to Graph Retrieval</title>
+
+  <link rel="icon" type="image/x-icon" href="static/images/favicon.ico">
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+  <link rel="preload" href="static/css/fontawesome.all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript>
+    <link rel="stylesheet" href="static/css/fontawesome.all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  </noscript>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script defer src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="static/js/fontawesome.all.min.js"></script>
+  <script defer src="static/js/index.js"></script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ScholarlyArticle",
+    "headline": "Exchangeability of GNN Representations with Applications to Graph Retrieval",
+    "description": "GHash discovers exchangeability in GNN embeddings and uses it for efficient locality-sensitive hashing of graphs.",
+    "author": [
+      {"@type": "Person", "name": "Kartik Nair", "affiliation": {"@type": "Organization", "name": "Carnegie Mellon University"}},
+      {"@type": "Person", "name": "Indradyumna Roy", "affiliation": {"@type": "Organization", "name": "IIT Bombay"}},
+      {"@type": "Person", "name": "Soumen Chakrabarti", "affiliation": {"@type": "Organization", "name": "IIT Bombay"}},
+      {"@type": "Person", "name": "Anirban Dasgupta", "affiliation": {"@type": "Organization", "name": "IIT Gandhinagar"}},
+      {"@type": "Person", "name": "Abir De", "affiliation": {"@type": "Organization", "name": "IIT Bombay"}}
+    ],
+    "datePublished": "2026",
+    "publisher": {"@type": "Organization", "name": "ICLR"},
+    "isAccessibleForFree": true
+  }
+  </script>
+</head>
+<body>
+
+  <button class="scroll-to-top" onclick="scrollToTop()" title="Scroll to top" aria-label="Scroll to top">
+    <i class="fas fa-chevron-up"></i>
+  </button>
+
+  <main id="main-content">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column has-text-centered">
+            <h1 class="title is-1 publication-title">Exchangeability of GNN Representations with Applications to Graph Retrieval</h1>
+            <div class="is-size-5 publication-authors">
+              <span class="author-block"><a href="#" target="_blank">Kartik Nair</a><sup>1,2</sup>,</span>
+              <span class="author-block"><a href="#" target="_blank">Indradyumna Roy</a><sup>2</sup>,</span>
+              <span class="author-block"><a href="#" target="_blank">Soumen Chakrabarti</a><sup>2</sup>,</span>
+              <span class="author-block"><a href="#" target="_blank">Anirban Dasgupta</a><sup>3</sup>,</span>
+              <span class="author-block"><a href="#" target="_blank">Abir De</a><sup>2</sup></span>
+            </div>
+
+            <div class="is-size-5 publication-authors">
+              <span class="author-block"><sup>1</sup>Carnegie Mellon University &nbsp; <sup>2</sup>IIT Bombay &nbsp; <sup>3</sup>IIT Gandhinagar<br><strong>ICLR 2026 (Oral)</strong></span>
+            </div>
+
+            <div class="column has-text-centered">
+              <div class="publication-links">
+                <span class="link-block">
+                  <a href="#" target="_blank" class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                    <span>PDF</span>
+                  </a>
+                </span>
+                <span class="link-block">
+                  <a href="https://rebrand.ly/graphhash" target="_blank" class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon"><i class="fab fa-github"></i></span>
+                    <span>Code</span>
+                  </a>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Abstract -->
+  <section class="section hero is-light">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">Abstract</h2>
+          <div class="content has-text-justified">
+            <p>
+              We discover a probabilistic symmetry, called exchangeability, in graph neural networks (GNNs). Specifically, we show that the trained node embeddings computed using a large family of graph neural networks, learned under standard optimization tools, are exchangeable random variables. This implies that the probability density of the node embeddings remains invariant with respect to a permutation applied on their dimension axis. This results in identical distribution across the elements of the graph representations. Such a property enables approximation of transportation-based graph similarities by Euclidean similarities between the sorted embedding elements in fixed dimension. This allows us to propose a unified locality-sensitive hashing (LSH) framework that supports diverse relevance measures for graphs. Experiments show that our method provides more effective LSH than baselines.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Blog-style summary -->
+  <section class="section">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column is-four-fifths">
+
+          <h2 class="title is-3 has-text-centered">The Graph Retrieval Problem</h2>
+          <div class="content has-text-justified">
+            <p>
+              Finding the most similar graphs in a large corpus is a fundamental problem in cheminformatics, social network analysis, and program analysis. Recent work has shown that <strong>transportation-based similarities</strong>&mdash;which compute optimal alignments between node embeddings of two graphs&mdash;significantly outperform simpler aggregation methods and graph kernels. However, these distances are expensive: exact computation scales as O(n&sup3;) for graphs with n nodes, and even approximations like Sinkhorn iterations require O(n&sup2;) per comparison. When searching a corpus of millions of graphs, these costs become prohibitive.
+            </p>
+          </div>
+
+          <h2 class="title is-3 has-text-centered">Exchangeability in GNN Embeddings</h2>
+          <div class="content has-text-justified">
+            <p>
+              We discover a surprising property: trained GNN embeddings are <strong>exchangeable random variables</strong> along their dimension axis. If a GNN produces a D-dimensional embedding for each node, the individual dimension values are identically distributed&mdash;their joint probability density is invariant under any permutation of the dimensions. This property emerges naturally from standard training (SGD, Adam) across a wide family of GNN architectures, without any explicit architectural constraints.
+            </p>
+            <p>
+              The figure below shows this empirically: the probability density of individual embedding dimensions across nodes converges to the same distribution as training progresses.
+            </p>
+          </div>
+
+          <div class="has-text-centered" style="margin: 2rem 0;">
+            <img src="static/images/distn_cox2.png" alt="Embedding distribution convergence on COX2" style="max-width: 100%;">
+            <p class="has-text-grey" style="margin-top: 0.5rem; font-size: 0.9rem;">
+              <strong>Figure 1.</strong> Empirical probability density of GNN embedding dimensions on the COX2 dataset across training epochs, demonstrating convergence to exchangeability.
+            </p>
+          </div>
+
+          <h2 class="title is-3 has-text-centered">From Transportation to Sorting</h2>
+          <div class="content has-text-justified">
+            <p>
+              Exchangeability unlocks an elegant computational shortcut. Since all embedding dimensions are identically distributed, each dimension provides a concentrated estimate of the underlying transportation-based similarity. Rather than solving the full high-dimensional transportation problem, we can:
+            </p>
+            <ol>
+              <li>Extract embeddings for each dimension separately</li>
+              <li>Sort the values within each dimension across all nodes</li>
+              <li>Compute per-dimension Euclidean distances between sorted vectors</li>
+              <li>Aggregate these D simple distance estimates</li>
+            </ol>
+            <p>
+              This reduces the O(n&sup3;) transportation problem to D independent O(n log n) sorting problems&mdash;far more amenable to indexing.
+            </p>
+          </div>
+
+          <div class="has-text-centered" style="margin: 2rem 0;">
+            <img src="static/images/ghash_method.png" alt="GHash methodology overview" style="max-width: 100%;">
+            <p class="has-text-grey" style="margin-top: 0.5rem; font-size: 0.9rem;">
+              <strong>Figure 2.</strong> Overview of the GHash framework. Exchangeability enables sorting-based approximation of transportation distances, which are then hashed using a unified LSH scheme.
+            </p>
+          </div>
+
+          <div class="content has-text-justified">
+            <p>
+              With Euclidean similarities now in play, standard <strong>locality-sensitive hashing (LSH)</strong> becomes applicable. We project sorted embedding vectors into Fourier space, hash each dimension independently, and aggregate across dimension-specific hash tables for retrieval. This is the first principled LSH approach that supports <em>asymmetric</em> transportation-based similarities, including subgraph isomorphism and graph edit distance with non-uniform costs.
+            </p>
+          </div>
+
+          <h2 class="title is-3 has-text-centered">Results</h2>
+          <div class="content has-text-justified">
+            <p>
+              We evaluate on four graph datasets from TUDatasets (COX2, PTC-FM, PTC-FR, PTC-MR) with 500 query graphs and a corpus of 100,000 graphs each, measuring MAP under both subgraph matching (SM) and graph edit distance (GED) relevance. GHash consistently outperforms all baselines including FourierHashNet, Random Hyperplanes, FAISS-IVF, and DiskANN.
+            </p>
+          </div>
+
+          <div class="columns is-multiline" style="margin: 2rem 0;">
+            <div class="column is-half has-text-centered">
+              <img src="static/images/perf_cox2_subiso.png" alt="COX2 subgraph isomorphism retrieval" style="max-width: 100%;">
+              <p class="has-text-grey" style="margin-top: 0.5rem; font-size: 0.9rem;">
+                <strong>Figure 3.</strong> MAP vs. retrieved graphs on COX2 (Subgraph Isomorphism). GHash achieves superior retrieval accuracy.
+              </p>
+            </div>
+            <div class="column is-half has-text-centered">
+              <img src="static/images/perf_ptc_fm_subiso.png" alt="PTC-FM subgraph isomorphism retrieval" style="max-width: 100%;">
+              <p class="has-text-grey" style="margin-top: 0.5rem; font-size: 0.9rem;">
+                <strong>Figure 4.</strong> MAP vs. retrieved graphs on PTC-FM (Subgraph Isomorphism).
+              </p>
+            </div>
+          </div>
+
+          <div class="content has-text-justified">
+            <p>
+              FourierHashNet plateaus below 50% MAP on several SM tasks due to its reliance on mean-pooled representations, while symmetric methods (IVF, DiskANN) fail entirely on asymmetric relevance measures. GHash spans the full accuracy&ndash;efficiency tradeoff spectrum, making it practical for large-scale graph retrieval.
+            </p>
+          </div>
+
+          <div class="has-text-centered" style="margin: 2rem 0;">
+            <img src="static/images/ablation_dimH.png" alt="Ablation on embedding dimension H" style="max-width: 80%;">
+            <p class="has-text-grey" style="margin-top: 0.5rem; font-size: 0.9rem;">
+              <strong>Figure 5.</strong> Ablation: effect of embedding dimension H on retrieval quality (COX2, Subgraph Isomorphism).
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BibTeX -->
+  <section class="section hero is-light" id="BibTeX">
+    <div class="container is-max-desktop content">
+      <div class="bibtex-header">
+        <h2 class="title">BibTeX</h2>
+        <button class="copy-bibtex-btn" onclick="copyBibTeX()" title="Copy BibTeX to clipboard">
+          <i class="fas fa-copy"></i>
+          <span class="copy-text">Copy</span>
+        </button>
+      </div>
+      <pre id="bibtex-code"><code>@inproceedings{nair2026exchangeability,
+  title={Exchangeability of {GNN} Representations with Applications to Graph Retrieval},
+  author={Nair, Kartik and Roy, Indradyumna and Chakrabarti, Soumen and Dasgupta, Anirban and De, Abir},
+  booktitle={Proceedings of the International Conference on Learning Representations (ICLR)},
+  year={2026}
+}</code></pre>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-8">
+          <div class="content">
+            <p>
+              This page was built using the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">Academic Project Page Template</a>.
+              Licensed under <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC BY-SA 4.0</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
