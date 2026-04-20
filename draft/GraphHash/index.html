@@ -137,60 +137,73 @@
           <h2 class="title is-3 has-text-centered">The Graph Retrieval Problem</h2>
           <div class="content has-text-justified">
             <p>
-              Finding the most similar graphs in a large corpus is a fundamental problem in cheminformatics, social network analysis, and program analysis. Recent work has shown that <strong>transportation-based similarities</strong>&mdash;which compute optimal alignments between node embeddings of two graphs&mdash;significantly outperform simpler aggregation methods and graph kernels. However, these distances are expensive: exact computation scales as O(n&sup3;) for graphs with n nodes, and even approximations like Sinkhorn iterations require O(n&sup2;) per comparison. When searching a corpus of millions of graphs, these costs become prohibitive.
+              Finding the most similar graphs in a large corpus is a fundamental problem in cheminformatics, social network analysis, and program analysis. Recent work has shown that <strong>transportation-based similarities</strong>&mdash;which compute optimal alignments between node embeddings of two graphs&mdash;significantly outperform simpler aggregation methods and graph kernels. These distances unify multiple relevance measures: the hinge distance &rho;(&middot;) = [&middot;]<sub>+</sub> captures subgraph isomorphism, while asymmetric costs &rho;(&middot;) = c<sub>del</sub>[&middot;]<sub>+</sub> + c<sub>ins</sub>[&minus;&middot;]<sub>+</sub> capture graph edit distance.
+            </p>
+            <p>
+              However, exact computation requires solving an optimal assignment over n nodes, scaling as O(n&sup3;). Even Sinkhorn approximations need O(n&sup2;) per comparison. The challenge: transportation distances cannot be decomposed into independent per-node comparisons and readily separated into corpus and query terms. This makes standard indexing (LSH, IVF) inapplicable.
             </p>
           </div>
 
-          <h2 class="title is-3 has-text-centered">Exchangeability in GNN Embeddings</h2>
+          <h2 class="title is-3 has-text-centered">A New Axis of Symmetry in Neural Representations</h2>
           <div class="content has-text-justified">
             <p>
-              We discover a surprising property: trained GNN embeddings are <strong>exchangeable random variables</strong> along their dimension axis. If a GNN produces a D-dimensional embedding for each node, the individual dimension values are identically distributed&mdash;their joint probability density is invariant under any permutation of the dimensions. This property emerges naturally from standard training (SGD, Adam) across a wide family of GNN architectures, without any explicit architectural constraints.
-            </p>
-            <p>
-              The figure below shows this empirically: the probability density of individual embedding dimensions across nodes converges to the same distribution as training progresses.
+              We discover that trained GNN embeddings exhibit <strong>exchangeability</strong>&mdash;a probabilistic symmetry where the joint distribution p(X) = p(X&pi;) is invariant under any permutation &pi; applied to the dimension axis. If a GNN produces a D-dimensional embedding for each node, all D co-ordinate values share the same marginal distribution. This is not a symmetry of the input data or the architecture&mdash;it is a symmetry in the <em>neural representation space</em> itself.
             </p>
           </div>
 
           <div class="has-text-centered" style="margin: 2rem 0;">
             <img src="static/images/distn_cox2.png" alt="Embedding distribution convergence on COX2" style="max-width: 100%;">
             <p class="has-text-grey" style="margin-top: 0.5rem; font-size: 0.9rem;">
-              <strong>Figure 1.</strong> Empirical probability density of GNN embedding dimensions on the COX2 dataset across training epochs, demonstrating convergence to exchangeability.
+              <strong>Figure 1.</strong> Empirical probability density of individual GNN embedding dimensions on COX2 across training epochs. The marginal distributions converge to be identical, confirming exchangeability. Validated with MMD&sup2; &asymp; &minus;10<sup>&minus;5</sup> across 5,000 independently trained models.
+            </p>
+          </div>
+
+          <h2 class="title is-3 has-text-centered">The Mechanism</h2>
+          <div class="content has-text-justified">
+            <p>
+              How does exchangeability arise? We trace it to three conditions that hold for a large family of GNNs trained with standard optimizers:
+            </p>
+            <ol>
+              <li><strong>Permutation-induced parameter transformations.</strong> For any dimension permutation &pi;, there exists a bijective transformation &tau;<sub>&pi;</sub> on the network parameters that induces the corresponding permutation on embeddings: X &mapsto; X&pi;. This transformation has unit Jacobian determinant.</li>
+              <li><strong>Symmetry at initialization.</strong> IID parameter initialization ensures p(&theta;<sub>0</sub>) = p(&tau;<sub>&pi;</sub>(&theta;<sub>0</sub>)) for all permutations &pi;. All permuted parameter configurations are equally likely at the start.</li>
+              <li><strong>Gradient equivariance.</strong> Since the loss function (transportation distance) is permutation-invariant, the gradient is equivariant under &tau;<sub>&pi;</sub>. If parameters start as &tau;<sub>&pi;</sub>(&theta;<sub>0</sub>), gradient updates also undergo the same transformation. So p(&theta;<sub>t</sub>) = p(&tau;<sub>&pi;</sub>(&theta;<sub>t</sub>)) for all training epochs t &ge; 0.</li>
+            </ol>
+            <p>
+              Together: exchangeability of parameters at initialization is preserved throughout training and propagates to the embeddings.
+            </p>
+          </div>
+
+          <div class="has-text-centered" style="margin: 2rem 0;">
+            <img src="static/images/singular_ratio.png" alt="Top singular value ratio converging to 1" style="max-width: 80%;">
+            <p class="has-text-grey" style="margin-top: 0.5rem; font-size: 0.9rem;">
+              <strong>Figure 2.</strong> The ratio &sigma;<sub>1</sub>&sup2; / (&Sigma;<sub>i</sub> &sigma;<sub>i</sub>&sup2;) of the top singular value converges to 1 across training, confirming that E[X] collapses to rank one&mdash;a consequence of exchangeability.
             </p>
           </div>
 
           <h2 class="title is-3 has-text-centered">From Transportation to Sorting</h2>
           <div class="content has-text-justified">
             <p>
-              Exchangeability unlocks an elegant computational shortcut. Since all embedding dimensions are identically distributed, each dimension provides a concentrated estimate of the underlying transportation-based similarity. Rather than solving the full high-dimensional transportation problem, we can:
+              Exchangeability unlocks an elegant computational shortcut. In 1D (D=1), optimal transport between two sets of scalars is trivially solved by sorting and pairing in order (the rearrangement inequality). For D &gt; 1, exchangeability guarantees that each dimension yields a <strong>concentrated estimate</strong> of the full transportation-based similarity. By de Finetti&rsquo;s theorem, the mixing representation ensures that per-dimension estimates concentrate: setting D &gt; 1/(&epsilon;&sup2;&delta;) guarantees &epsilon;-accurate estimates with probability &ge; 1 &minus; &beta;<sub>0</sub>&delta;.
             </p>
-            <ol>
-              <li>Extract embeddings for each dimension separately</li>
-              <li>Sort the values within each dimension across all nodes</li>
-              <li>Compute per-dimension Euclidean distances between sorted vectors</li>
-              <li>Aggregate these D simple distance estimates</li>
-            </ol>
             <p>
-              This reduces the O(n&sup3;) transportation problem to D independent O(n log n) sorting problems&mdash;far more amenable to indexing.
+              This reduces the O(n&sup3;) transportation problem to D independent O(n log n) sorting problems. Each dimension&rsquo;s sorted embedding vector is then projected into Fourier space and hashed using standard random hyperplane LSH, with per-dimension hash tables aggregated for retrieval. This is the <strong>first principled LSH framework for asymmetric transportation-based similarities</strong>.
             </p>
           </div>
 
           <div class="has-text-centered" style="margin: 2rem 0;">
             <img src="static/images/ghash_method.png" alt="GHash methodology overview" style="max-width: 100%;">
             <p class="has-text-grey" style="margin-top: 0.5rem; font-size: 0.9rem;">
-              <strong>Figure 2.</strong> Overview of the GHash framework. Exchangeability enables sorting-based approximation of transportation distances, which are then hashed using a unified LSH scheme.
-            </p>
-          </div>
-
-          <div class="content has-text-justified">
-            <p>
-              With Euclidean similarities now in play, standard <strong>locality-sensitive hashing (LSH)</strong> becomes applicable. We project sorted embedding vectors into Fourier space, hash each dimension independently, and aggregate across dimension-specific hash tables for retrieval. This is the first principled LSH approach that supports <em>asymmetric</em> transportation-based similarities, including subgraph isomorphism and graph edit distance with non-uniform costs.
+              <strong>Figure 3.</strong> Overview of the GHash framework. Exchangeability enables per-dimension sorting to approximate transportation distances; Fourier-based LSH with multiple hash tables enables sublinear-time retrieval.
             </p>
           </div>
 
           <h2 class="title is-3 has-text-centered">Results</h2>
           <div class="content has-text-justified">
             <p>
-              We evaluate on four graph datasets from TUDatasets (COX2, PTC-FM, PTC-FR, PTC-MR) with 500 query graphs and a corpus of 100,000 graphs each, measuring MAP under both subgraph matching (SM) and graph edit distance (GED) relevance. GHash consistently outperforms all baselines including FourierHashNet, Random Hyperplanes, FAISS-IVF, and DiskANN.
+              We evaluate on four TUDatasets (COX2, PTC-FM, PTC-FR, PTC-MR) with 500 query graphs and 100,000 corpus graphs each, measuring MAP under subgraph matching (SM, via VF2) and graph edit distance (GED, insertion cost=1, deletion cost=2).
+            </p>
+            <p>
+              GHash consistently achieves the <strong>highest MAP</strong> across all datasets and both tasks. FourierHashNet, the previous best approach, plateaus below 50% MAP on several SM tasks because it relies on mean-pooled representations that discard multi-vector structure. Random Hyperplanes show high variance and poor SM performance. Symmetric methods (FAISS-IVF, DiskANN) are fundamentally incompatible with asymmetric relevance measures like subgraph isomorphism.
             </p>
           </div>
 
@@ -198,27 +211,32 @@
             <div class="column is-half has-text-centered">
               <img src="static/images/perf_cox2_subiso.png" alt="COX2 subgraph isomorphism retrieval" style="max-width: 100%;">
               <p class="has-text-grey" style="margin-top: 0.5rem; font-size: 0.9rem;">
-                <strong>Figure 3.</strong> MAP vs. retrieved graphs on COX2 (Subgraph Isomorphism). GHash achieves superior retrieval accuracy.
+                <strong>Figure 4.</strong> MAP vs. retrieved graphs on COX2 (Subgraph Isomorphism).
               </p>
             </div>
             <div class="column is-half has-text-centered">
               <img src="static/images/perf_ptc_fm_subiso.png" alt="PTC-FM subgraph isomorphism retrieval" style="max-width: 100%;">
               <p class="has-text-grey" style="margin-top: 0.5rem; font-size: 0.9rem;">
-                <strong>Figure 4.</strong> MAP vs. retrieved graphs on PTC-FM (Subgraph Isomorphism).
+                <strong>Figure 5.</strong> MAP vs. retrieved graphs on PTC-FM (Subgraph Isomorphism).
               </p>
             </div>
-          </div>
-
-          <div class="content has-text-justified">
-            <p>
-              FourierHashNet plateaus below 50% MAP on several SM tasks due to its reliance on mean-pooled representations, while symmetric methods (IVF, DiskANN) fail entirely on asymmetric relevance measures. GHash spans the full accuracy&ndash;efficiency tradeoff spectrum, making it practical for large-scale graph retrieval.
-            </p>
           </div>
 
           <div class="has-text-centered" style="margin: 2rem 0;">
             <img src="static/images/ablation_dimH.png" alt="Ablation on embedding dimension H" style="max-width: 80%;">
             <p class="has-text-grey" style="margin-top: 0.5rem; font-size: 0.9rem;">
-              <strong>Figure 5.</strong> Ablation: effect of embedding dimension H on retrieval quality (COX2, Subgraph Isomorphism).
+              <strong>Figure 6.</strong> Ablation: AUC of MAP vs. #retrieved graphs as a function of embedding dimension H. Optimal at dim<sub>h</sub> &asymp; 10 across all datasets.
+            </p>
+          </div>
+
+          <!-- Poster -->
+          <h2 class="title is-3 has-text-centered">Poster</h2>
+          <div class="has-text-centered" style="margin: 2rem 0;">
+            <a href="static/images/poster.png" target="_blank">
+              <img src="static/images/poster.png" alt="GHash ICLR 2026 poster" style="max-width: 100%; border: 1px solid #e2e8f0; border-radius: 8px;">
+            </a>
+            <p class="has-text-grey" style="margin-top: 0.5rem; font-size: 0.9rem;">
+              Click to view full size.
             </p>
           </div>
 

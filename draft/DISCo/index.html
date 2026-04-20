@@ -140,37 +140,63 @@
       <div class="columns is-centered">
         <div class="column is-four-fifths">
 
-          <h2 class="title is-3 has-text-centered">Why Collective Coverage?</h2>
+          <h2 class="title is-3 has-text-centered">Collaborate, Not Compete</h2>
           <div class="content has-text-justified">
             <p>
-              In traditional IR, each corpus item is scored independently and the top-K are returned. The implicit assumption is that a single relevant item is self-complete and can satisfy the information need on its own. But in many modern retrieval scenarios&mdash;multi-hop QA, table QA, text-to-SQL&mdash;no single item contains the full answer. Items must <em>collaborate</em>: information from multiple passages must be combined to respond to a query.
-            </p>
-            <p>
-              Consider the multi-hop question: <em>&ldquo;Which computer scientist from Clamart was an editor of Algorithmica?&rdquo;</em> No single Wikipedia passage mentions both &ldquo;Clamart&rdquo; and &ldquo;Algorithmica&rdquo;&mdash;the answer requires reasoning across multiple passages. Worse, top-scoring items (e.g., multiple biographies of the same person) may be redundant, wasting the retrieval budget without covering all aspects of the query. Beyond individual relevance, a retriever should promote item <em>subsets</em> that collectively cover the query.
+              Traditional dense retrieval scores each corpus item independently against a query using late-interaction models like ColBERT, then returns the top-K. The assumption is that each item is self-complete. But in multi-hop QA, table QA, and text-to-SQL, no single item contains the full answer&mdash;items must <em>collaborate</em>. Multiple passages need to be combined to respond to the query.
             </p>
           </div>
 
-          <h2 class="title is-3 has-text-centered">Method</h2>
+          <div class="has-text-centered" style="margin: 2rem 0;">
+            <img src="static/images/motivating_example.png" alt="Motivating example: Birthday of the composer of the film Sruthilayalu" style="max-width: 100%;">
+            <p class="has-text-grey" style="margin-top: 0.5rem; font-size: 0.9rem;">
+              <strong>Figure 1.</strong> For the query <em>&ldquo;Birthday of the composer of the film Sruthilayalu&rdquo;</em>, no single passage is self-complete. Top-K retrieval returns redundant items, while the gold set requires passages that collaboratively cover all query aspects.
+            </p>
+          </div>
+
           <div class="content has-text-justified">
             <p>
-              DISCo defines a coverage objective that measures how well a set of retrieved items collectively covers every query atom vector. This objective is <strong>monotone and submodular</strong>&mdash;it exhibits diminishing returns&mdash;so a greedy algorithm that iteratively selects the item with the highest marginal gain achieves a (1&minus;1/e) approximation to the optimum.
+              Traditional top-K retrieval is fundamentally competitive: items fight for the same top ranks. This leads to redundancy&mdash;multiple biographies of the same person, for example&mdash;while failing to cover all aspects of a complex query. We reformulate retrieval as a <strong>coverage</strong> problem: find a small item subset whose token vectors collectively cover the query&rsquo;s token vectors.
+            </p>
+          </div>
+
+          <h2 class="title is-3 has-text-centered">Coverage as a Submodular Objective</h2>
+          <div class="content has-text-justified">
+            <p>
+              We formalize coverage as a facility-location style objective: for a selected set S and query Q, the coverage is F(S, Q) = &Sigma;<sub>q&isin;Q</sub> max<sub>x&isin;&cup;<sub>d&isin;S</sub> D<sub>d</sub></sub> q<sup>T</sup>x. Unlike independent top-K retrieval which sums per-document MaxSim scores, this objective gives <strong>no additive credit</strong> for multiple documents redundantly covering the same query token. It is <strong>monotone and submodular</strong>&mdash;exhibiting diminishing returns&mdash;so a greedy algorithm achieves a (1&minus;1/e) &asymp; 63% approximation to the optimum.
             </p>
             <p>
-              The computational challenge is that evaluating marginal gains over the full corpus is linear in corpus size. For MS-MARCO with 8.8M passages, selecting just K=10 items would require 88 million marginal gain computations&mdash;prohibitively slow. DISCo overcomes this by introducing an augmented &ldquo;lifted&rdquo; vector space: query tokens are augmented with their current coverage state, and corpus tokens are augmented to become coverage-agnostic. Random projections then enable efficient approximate nearest neighbor search in this lifted space, reducing retrieval to a few fast index probes per round.
+              The challenge: evaluating marginal gains over the full corpus is linear in corpus size. For MS-MARCO (8.8M passages), selecting K=10 items requires 88 million marginal gain computations&mdash;prohibitively slow for first-stage retrieval. Existing approaches like stochastic greedy or lazier-than-lazy greedy prune candidates in a query-agnostic manner, leading to poor tradeoffs.
+            </p>
+          </div>
+
+          <h2 class="title is-3 has-text-centered">Making the Marginal Gain Index-able</h2>
+          <div class="content has-text-justified">
+            <p>
+              DISCo solves this in two steps:
+            </p>
+            <p>
+              <strong>1. Separating state dependence.</strong> We rewrite the marginal gain as an inner product in an augmented &ldquo;lifted&rdquo; vector space. The query token y is augmented with its current coverage value: &ycirc;<sub>S</sub> = [y; F(S,y)] &isin; &Ropf;<sup>d+1</sup>. The corpus token x is augmented as &xcirc; = [x; &minus;1] &isin; &Ropf;<sup>d+1</sup>. The marginal gain then becomes [&ycirc;<sub>S</sub><sup>T</sup>&xcirc;]<sub>+</sub>. Crucially, this transfers all dependency on the current set S into the query representation, while the corpus representation &xcirc; remains static and can be preprocessed once.
+            </p>
+            <p>
+              <strong>2. Handling the hinge with random projections.</strong> The [&middot;]<sub>+</sub> hinge prevents direct ANN indexing. We resolve this by sampling random hyperplanes w &sim; N(0, I<sub>d+1</sub>) and defining a feature map &Phi;<sub>w</sub>(u) = [u; sign(w<sup>T</sup>u)&middot;u]/&radic;2 such that &Phi;<sub>w</sub>(u)<sup>T</sup>&Phi;<sub>w</sub>(v) = [u<sup>T</sup>v]<sub>+</sub> with probability &ge; 0.5. With R &ge; 8 hyperplanes (for queries with |Q| &lt; 32), the approximation recovers the true marginal gain with probability &ge; 87.5%. The resulting expression closely resembles the standard MaxSim score, making it amenable to indexing.
             </p>
           </div>
 
           <div class="has-text-centered" style="margin: 2rem 0;">
             <img src="static/images/disco_system.png" alt="DISCo system architecture" style="max-width: 100%;">
             <p class="has-text-grey" style="margin-top: 0.5rem; font-size: 0.9rem;">
-              <strong>Figure 1.</strong> Overview of the DISCo retrieval pipeline. Query vectors are iteratively edited to account for current coverage, and the lifted dense index enables efficient approximate nearest neighbor search.
+              <strong>Figure 2.</strong> The DISCo retrieval pipeline. Each greedy step is replaced by an approximate nearest-neighbor search in the lifted space. Each replica index has a token-level IVF, with each token stored as a centroid and quantized residual. Retrieval consists of a token-level IVF lookup followed by progressive levels of candidate reranking.
             </p>
           </div>
 
           <h2 class="title is-3 has-text-centered">Results</h2>
           <div class="content has-text-justified">
             <p>
-              We evaluate DISCo on MS-MARCO, HotpotQA, FEVER, and LoTTE (Pooled, Science, Technology, Writing) against both IR baselines (PLAID, MUVERA, WARP) and greedy coverage baselines. DISCo consistently achieves the best coverage vs. query latency tradeoff&mdash;matching greedy baselines in coverage quality while being over 100&times; faster.
+              We compare DISCo against greedy submodular solvers (Exact Greedy, Lazy Greedy, Stochastic Greedy, Lazier-than-Lazy Greedy) and traditional multi-vector retrieval engines (PLAID, MUVERA, WARP) across seven large-scale benchmarks: MS-MARCO (8.8M passages), HotpotQA, FEVER, and four LoTTE domains.
+            </p>
+            <p>
+              DISCo achieves the best coverage vs. query latency tradeoff&mdash;matching greedy baselines in coverage quality while being over <strong>100&times; faster</strong> on MS-MARCO. On HotpotQA with gold set size |S<sub>gold</sub>| = 2, DISCo achieves the lowest coverage error (0.59 vs. 0.63 for Exact Greedy and 0.98 for PLAID) and the highest MAP on gold sets (0.84 vs. 0.83 for Exact Greedy and 0.81 for PLAID). Stochastic and lazier-than-lazy variants show poor tradeoffs due to their query-agnostic random pruning.
             </p>
           </div>
 
@@ -178,32 +204,37 @@
             <div class="column is-half has-text-centered">
               <img src="static/images/msmarco_coverage.png" alt="MS-MARCO coverage vs latency" style="max-width: 100%;">
               <p class="has-text-grey" style="margin-top: 0.5rem; font-size: 0.9rem;">
-                <strong>Figure 2.</strong> Coverage vs. latency on MS-MARCO.
+                <strong>Figure 3.</strong> Coverage vs. latency on MS-MARCO.
               </p>
             </div>
             <div class="column is-half has-text-centered">
               <img src="static/images/hotpotqa_coverage.png" alt="HotpotQA coverage vs latency" style="max-width: 100%;">
               <p class="has-text-grey" style="margin-top: 0.5rem; font-size: 0.9rem;">
-                <strong>Figure 3.</strong> Coverage vs. latency on HotpotQA.
+                <strong>Figure 4.</strong> Coverage vs. latency on HotpotQA.
               </p>
             </div>
             <div class="column is-half has-text-centered">
               <img src="static/images/fever_coverage.png" alt="FEVER coverage vs latency" style="max-width: 100%;">
               <p class="has-text-grey" style="margin-top: 0.5rem; font-size: 0.9rem;">
-                <strong>Figure 4.</strong> Coverage vs. latency on FEVER.
+                <strong>Figure 5.</strong> Coverage vs. latency on FEVER.
               </p>
             </div>
             <div class="column is-half has-text-centered">
               <img src="static/images/hotpotqa_histogram.png" alt="Retrieval rank histogram on HotpotQA" style="max-width: 100%;">
               <p class="has-text-grey" style="margin-top: 0.5rem; font-size: 0.9rem;">
-                <strong>Figure 5.</strong> Rank of the last relevant item retrieved on HotpotQA. DISCo retrieves nearly all relevant items within 2&ndash;3 rounds.
+                <strong>Figure 6.</strong> Rank of the last relevant item retrieved on HotpotQA. DISCo retrieves nearly all relevant items within 2&ndash;3 rounds, comparable to exact greedy.
               </p>
             </div>
           </div>
 
-          <div class="content has-text-justified">
-            <p>
-              The efficiency gains come from approximate ANN search in the lifted space, followed by centroid filtering and full-precision reranking on a small candidate set. Theoretically, with only R&ge;8 random hyperplanes, DISCo recovers the true marginal gain with high probability. The resulting approximation achieves (1&minus;1/e&minus;&delta;) &asymp; 62.5% of optimal&mdash;nearly identical to exact greedy&mdash;with negligible quality loss from the approximation.
+          <!-- Poster -->
+          <h2 class="title is-3 has-text-centered">Poster</h2>
+          <div class="has-text-centered" style="margin: 2rem 0;">
+            <a href="static/images/poster.png" target="_blank">
+              <img src="static/images/poster.png" alt="DISCo ICLR 2026 poster" style="max-width: 100%; border: 1px solid #e2e8f0; border-radius: 8px;">
+            </a>
+            <p class="has-text-grey" style="margin-top: 0.5rem; font-size: 0.9rem;">
+              Click to view full size.
             </p>
           </div>
 
