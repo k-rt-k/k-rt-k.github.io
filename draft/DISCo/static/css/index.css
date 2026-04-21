@@ -77,6 +77,13 @@
   color: #ffffff !important;
 }
 
+[data-theme=dark] .column img,
+[data-theme=dark] .has-text-centered img {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 0.5rem;
+}
+
 /* Theme toggle button */
 .theme-toggle {
   position: fixed;

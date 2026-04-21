@@ -58,8 +58,9 @@
 }
 
 [data-theme=dark] blockquote {
-  background: var(--background-accent);
-  border-left-color: var(--text-secondary);
+  background: var(--background-accent) !important;
+  border-left-color: var(--text-secondary) !important;
+  color: var(--text-secondary);
 }
 
 [data-theme=dark] .button.is-light {
@@ -75,6 +76,13 @@
 [data-theme=dark] .button.is-dark:hover {
   background: var(--primary-color) !important;
   color: #ffffff !important;
+}
+
+[data-theme=dark] .column img,
+[data-theme=dark] .has-text-centered img {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 0.5rem;
 }
 
 /* Theme toggle button */
