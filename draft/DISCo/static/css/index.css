@@ -23,6 +23,81 @@
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Dark mode */
+[data-theme=dark] {
+  --primary-color: #4a9eff;
+  --primary-hover: #6ab4ff;
+  --secondary-color: #8899aa;
+  --accent-color: #38bdf8;
+  --text-primary: #e8e8e8;
+  --text-secondary: #a0a0a0;
+  --text-light: #666666;
+  --background-primary: #0a0a0a;
+  --background-secondary: #111111;
+  --background-accent: #1a1a1a;
+  --border-color: #2a2a2a;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.4);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.6), 0 8px 10px -6px rgb(0 0 0 / 0.5);
+}
+
+[data-theme=dark] .hero.is-light {
+  background: var(--background-secondary);
+}
+
+[data-theme=dark] .has-text-grey,
+[data-theme=dark] .has-text-grey-dark {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme=dark] .title,
+[data-theme=dark] .title.is-1,
+[data-theme=dark] .title.is-3 {
+  color: var(--text-primary) !important;
+}
+
+[data-theme=dark] blockquote {
+  background: var(--background-accent);
+  border-left-color: var(--text-secondary);
+}
+
+[data-theme=dark] .button.is-light {
+  background: var(--background-accent) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Theme toggle button */
+.theme-toggle {
+  position: fixed;
+  top: 1.5rem;
+  left: 1.5rem;
+  z-index: 1000;
+  background: var(--background-primary);
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.4rem 0.7rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  min-height: 40px;
+  box-shadow: var(--shadow-md);
+}
+
+.theme-toggle:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.theme-toggle .moon-icon { display: block; }
+.theme-toggle .sun-icon { display: none; }
+[data-theme=dark] .theme-toggle .moon-icon { display: none; }
+[data-theme=dark] .theme-toggle .sun-icon { display: block; }
+
 /* Smooth scrolling for better UX */
 html {
   scroll-behavior: smooth;
@@ -36,6 +111,7 @@ body {
   background-color: var(--background-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 

@@ -17,8 +17,8 @@ const CONFIG = {
     
     // Game Settings
     GAME: {
-        CELL_SIZE: 18,
-        CELL_SIZE_MOBILE: 30, // Larger cells for mobile
+        CELL_SIZE: 14,
+        CELL_SIZE_MOBILE: 22, // Larger cells for mobile
         INITIAL_UPDATE_INTERVAL: 100, // milliseconds
         INITIAL_RANDOM_CELLS: 64
     },
