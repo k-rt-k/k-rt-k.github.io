@@ -17,8 +17,8 @@ const CONFIG = {
     
     // Game Settings
     GAME: {
-        CELL_SIZE: 12,
-        CELL_SIZE_MOBILE: 20, // Larger cells for mobile
+        CELL_SIZE: 18,
+        CELL_SIZE_MOBILE: 30, // Larger cells for mobile
         INITIAL_UPDATE_INTERVAL: 100, // milliseconds
         INITIAL_RANDOM_CELLS: 64
     },
@@ -378,15 +378,38 @@ class ConwayGameOfLife {
             }
         }
 
-        // Add some random cells for variety
-        this.addRandomCells(CONFIG.GAME.INITIAL_RANDOM_CELLS);
+        // Add random gliders for variety
+        this.addRandomGliders(CONFIG.GAME.INITIAL_RANDOM_CELLS);
     }
 
-    addRandomCells(count) {
-        for (let i = 0; i < count; i++) {
-            const row = Math.floor(Math.random() * this.rows);
-            const col = Math.floor(Math.random() * this.cols);
-            this.grid[row][col] = Math.random() < CONFIG.RANDOM_CELL_ALIVE_CHANCE;
+    addRandomGliders(count) {
+        // Glider pattern (SE direction): rotated for other cardinal directions
+        const gliderPatterns = {
+            // Southeast
+            SE: [[0,1,0],[0,0,1],[1,1,1]],
+            // Southwest
+            SW: [[0,1,0],[1,0,0],[1,1,1]],
+            // Northeast
+            NE: [[1,1,1],[0,0,1],[0,1,0]],
+            // Northwest
+            NW: [[1,1,1],[1,0,0],[0,1,0]]
+        };
+        const directions = Object.keys(gliderPatterns);
+        const numGliders = Math.floor(count / 6);
+
+        for (let g = 0; g < numGliders; g++) {
+            const dir = directions[Math.floor(Math.random() * directions.length)];
+            const pattern = gliderPatterns[dir];
+            const row = Math.floor(Math.random() * (this.rows - 3));
+            const col = Math.floor(Math.random() * (this.cols - 3));
+
+            for (let i = 0; i < pattern.length; i++) {
+                for (let j = 0; j < pattern[i].length; j++) {
+                    if (pattern[i][j] && row + i < this.rows && col + j < this.cols) {
+                        this.grid[row + i][col + j] = true;
+                    }
+                }
+            }
         }
     }
 
