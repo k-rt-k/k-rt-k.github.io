@@ -173,7 +173,9 @@
           </div>
 
           <div class="has-text-centered" style="margin: 2rem 0;">
-            <img src="static/images/motivating_example.png" alt="Motivating example: Birthday of the composer of the film Sruthilayalu" style="max-width: 100%;">
+            <div class="figure-group">
+              <img src="static/images/motivating_example.png" alt="Motivating example: Birthday of the composer of the film Sruthilayalu" style="max-width: 100%;">
+            </div>
             <p class="has-text-grey" style="margin-top: 0.5rem; font-size: 0.9rem;">
               <strong>Figure 1.</strong> For the query <em>&ldquo;Birthday of the composer of the film Sruthilayalu&rdquo;</em>, no single passage is self-complete. Top-K retrieval returns redundant items, while the gold set requires passages that collaboratively cover all query aspects.
             </p>
@@ -221,7 +223,9 @@
           </div>
 
           <div class="has-text-centered" style="margin: 2rem 0;">
-            <img src="static/images/disco_system.svg" alt="DISCo system architecture" style="max-width: 100%;">
+            <div class="figure-group">
+              <img src="static/images/disco_system.svg" alt="DISCo system architecture" style="max-width: 100%;">
+            </div>
             <p class="has-text-grey" style="margin-top: 0.5rem; font-size: 0.9rem;">
               <strong>Figure 2.</strong> The DISCo retrieval pipeline. Each greedy step is replaced by an approximate nearest-neighbor search in the lifted space. Each replica index has a token-level IVF, with each token stored as a centroid and quantized residual. Retrieval consists of a token-level IVF lookup followed by progressive levels of candidate reranking.
             </p>
@@ -237,36 +241,40 @@
             </p>
           </div>
 
-          <div class="has-text-centered" style="margin: 2rem 0 0.5rem;">
-            <img src="static/images/plot2_legend.png" alt="Legend" style="max-width: 50%;">
-          </div>
-          <div class="columns is-multiline" style="margin: 0;">
-            <div class="column is-one-quarter has-text-centered">
-              <img src="static/images/msmarco_plot2.png" alt="MS-MARCO" style="max-width: 100%;">
-              <p class="has-text-grey" style="font-size: 0.85rem;">(a) MS-MARCO</p>
+          <div class="figure-group">
+            <div class="has-text-centered" style="margin-bottom: 0.5rem;">
+              <img src="static/images/plot2_legend.png" alt="Legend" style="max-width: 50%;">
             </div>
-            <div class="column is-one-quarter has-text-centered">
-              <img src="static/images/hotpotqa_plot2.png" alt="HotpotQA" style="max-width: 100%;">
-              <p class="has-text-grey" style="font-size: 0.85rem;">(b) HotpotQA</p>
-            </div>
-            <div class="column is-one-quarter has-text-centered">
-              <img src="static/images/fever_plot2.png" alt="FEVER" style="max-width: 100%;">
-              <p class="has-text-grey" style="font-size: 0.85rem;">(c) FEVER</p>
-            </div>
-            <div class="column is-one-quarter has-text-centered">
-              <img src="static/images/pooled_plot2.png" alt="Pooled" style="max-width: 100%;">
-              <p class="has-text-grey" style="font-size: 0.85rem;">(d) Pooled</p>
+            <div class="columns is-multiline" style="margin: 0;">
+              <div class="column is-one-quarter has-text-centered">
+                <img src="static/images/msmarco_plot2.png" alt="MS-MARCO" style="max-width: 100%;">
+                <p class="has-text-grey" style="font-size: 0.85rem;">(a) MS-MARCO</p>
+              </div>
+              <div class="column is-one-quarter has-text-centered">
+                <img src="static/images/hotpotqa_plot2.png" alt="HotpotQA" style="max-width: 100%;">
+                <p class="has-text-grey" style="font-size: 0.85rem;">(b) HotpotQA</p>
+              </div>
+              <div class="column is-one-quarter has-text-centered">
+                <img src="static/images/fever_plot2.png" alt="FEVER" style="max-width: 100%;">
+                <p class="has-text-grey" style="font-size: 0.85rem;">(c) FEVER</p>
+              </div>
+              <div class="column is-one-quarter has-text-centered">
+                <img src="static/images/pooled_plot2.png" alt="Pooled" style="max-width: 100%;">
+                <p class="has-text-grey" style="font-size: 0.85rem;">(d) Pooled</p>
+              </div>
             </div>
           </div>
           <p class="has-text-grey has-text-centered" style="margin-top: 0.5rem; font-size: 0.9rem;">
             <strong>Figure 3.</strong> Trade-off between query latency and average coverage objective across benchmarks.
           </p>
 
-          <div class="has-text-centered" style="margin: 2.5rem 0 0.5rem;">
-            <img src="static/images/plot3_legend.png" alt="Legend" style="max-width: 40%;">
-          </div>
-          <div class="has-text-centered">
-            <img src="static/images/hotpotqa_histogram_plot3.png" alt="Retrieval rank histogram on HotpotQA" style="max-width: 50%;">
+          <div class="figure-group" style="margin-top: 2.5rem;">
+            <div class="has-text-centered" style="margin-bottom: 0.5rem;">
+              <img src="static/images/plot3_legend.png" alt="Legend" style="max-width: 40%;">
+            </div>
+            <div class="has-text-centered">
+              <img src="static/images/hotpotqa_histogram_plot3.png" alt="Retrieval rank histogram on HotpotQA" style="max-width: 50%;">
+            </div>
           </div>
           <p class="has-text-grey has-text-centered" style="margin-top: 0.5rem; font-size: 0.9rem;">
             <strong>Figure 4.</strong> Rank of the last relevant item retrieved on HotpotQA. DISCo retrieves nearly all relevant items within 2&ndash;3 rounds, comparable to exact greedy.

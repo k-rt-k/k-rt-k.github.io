@@ -230,6 +230,7 @@
           <h2 class="title is-3 has-text-centered">Some Implications</h2>
 
           <div class="distn-carousel" style="margin: 2rem 0;">
+            <div class="figure-group">
             <div id="distn-cox2">
               <div class="columns is-mobile" style="margin: 0; align-items: center;">
                 <div class="column is-one-quarter has-text-centered">
@@ -270,6 +271,7 @@
                 </div>
               </div>
             </div>
+            </div>
             <div class="has-text-centered" style="margin-top: 0.75rem;">
               <button class="button is-small is-rounded distn-btn is-dark" onclick="showDistn('cox2')">COX2</button>
               <button class="button is-small is-rounded distn-btn is-light" onclick="showDistn('ptcfr')">PTC-FR</button>
@@ -290,14 +292,16 @@
             }
           </script>
 
-          <div class="columns" style="margin: 2rem 0;">
-            <div class="column is-half has-text-centered">
-              <img src="static/images/singular_ratio_sm.png" alt="Singular value ratio Cox2 (SM)" style="max-width: 100%;">
-              <p class="has-text-grey" style="font-size: 0.85rem;">(a) Cox2 (SM)</p>
-            </div>
-            <div class="column is-half has-text-centered">
-              <img src="static/images/singular_ratio_ged.png" alt="Singular value ratio Cox2 (GED)" style="max-width: 100%;">
-              <p class="has-text-grey" style="font-size: 0.85rem;">(b) Cox2 (GED)</p>
+          <div class="figure-group" style="margin: 2rem 0;">
+            <div class="columns" style="margin: 0;">
+              <div class="column is-half has-text-centered">
+                <img src="static/images/singular_ratio_sm.png" alt="Singular value ratio Cox2 (SM)" style="max-width: 100%;">
+                <p class="has-text-grey" style="font-size: 0.85rem;">(a) Cox2 (SM)</p>
+              </div>
+              <div class="column is-half has-text-centered">
+                <img src="static/images/singular_ratio_ged.png" alt="Singular value ratio Cox2 (GED)" style="max-width: 100%;">
+                <p class="has-text-grey" style="font-size: 0.85rem;">(b) Cox2 (GED)</p>
+              </div>
             </div>
           </div>
           <p class="has-text-grey has-text-centered" style="font-size: 0.9rem;">
@@ -337,7 +341,9 @@
           </div>
 
           <div class="has-text-centered" style="margin: 2rem 0;">
-            <img src="static/images/ghash_method.png" alt="GHash methodology overview" style="max-width: 100%;">
+            <div class="figure-group">
+              <img src="static/images/ghash_method.png" alt="GHash methodology overview" style="max-width: 100%;">
+            </div>
             <p class="has-text-grey" style="margin-top: 0.5rem; font-size: 0.9rem;">
               <strong>Figure 3.</strong> Overview of the GHash framework. Exchangeability enables per-dimension sorting to approximate transportation distances; Fourier-based LSH with multiple hash tables enables sublinear-time retrieval.
             </p>
@@ -353,51 +359,53 @@
             </p>
           </div>
 
-          <div class="has-text-centered" style="margin: 2rem 0 0.5rem;">
-            <img src="static/images/perf_legend.png" alt="Legend" style="max-width: 60%;">
-          </div>
-          <div class="results-carousel" style="position: relative;">
-            <div class="carousel-slide" id="slide-sm">
-              <div class="columns is-mobile" style="margin: 0;">
-                <div class="column is-one-quarter has-text-centered">
-                  <img src="static/images/perf_ptc_fm_sm.png" alt="PTC-FM (SM)" style="max-width: 100%;">
-                  <p class="has-text-grey" style="font-size: 0.8rem;">(a) PTC-FM</p>
-                </div>
-                <div class="column is-one-quarter has-text-centered">
-                  <img src="static/images/perf_cox2_sm.png" alt="Cox2 (SM)" style="max-width: 100%;">
-                  <p class="has-text-grey" style="font-size: 0.8rem;">(b) Cox2</p>
-                </div>
-                <div class="column is-one-quarter has-text-centered">
-                  <img src="static/images/perf_ptc_fr_sm.png" alt="PTC-FR (SM)" style="max-width: 100%;">
-                  <p class="has-text-grey" style="font-size: 0.8rem;">(c) PTC-FR</p>
-                </div>
-                <div class="column is-one-quarter has-text-centered">
-                  <img src="static/images/perf_ptc_mr_sm.png" alt="PTC-MR (SM)" style="max-width: 100%;">
-                  <p class="has-text-grey" style="font-size: 0.8rem;">(d) PTC-MR</p>
-                </div>
-              </div>
-              <p class="has-text-grey has-text-centered" style="font-size: 0.9rem;">Subgraph Matching (SM)</p>
+          <div class="figure-group" style="margin: 2rem 0 0.5rem;">
+            <div class="has-text-centered" style="margin-bottom: 0.5rem;">
+              <img src="static/images/perf_legend.png" alt="Legend" style="max-width: 60%;">
             </div>
-            <div class="carousel-slide" id="slide-ged" style="display: none;">
-              <div class="columns is-mobile" style="margin: 0;">
-                <div class="column is-one-quarter has-text-centered">
-                  <img src="static/images/perf_ptc_fm_ged.png" alt="PTC-FM (GED)" style="max-width: 100%;">
-                  <p class="has-text-grey" style="font-size: 0.8rem;">(e) PTC-FM</p>
+            <div class="results-carousel" style="position: relative;">
+              <div class="carousel-slide" id="slide-sm">
+                <div class="columns is-mobile" style="margin: 0;">
+                  <div class="column is-one-quarter has-text-centered">
+                    <img src="static/images/perf_ptc_fm_sm.png" alt="PTC-FM (SM)" style="max-width: 100%;">
+                    <p class="has-text-grey" style="font-size: 0.8rem;">(a) PTC-FM</p>
+                  </div>
+                  <div class="column is-one-quarter has-text-centered">
+                    <img src="static/images/perf_cox2_sm.png" alt="Cox2 (SM)" style="max-width: 100%;">
+                    <p class="has-text-grey" style="font-size: 0.8rem;">(b) Cox2</p>
+                  </div>
+                  <div class="column is-one-quarter has-text-centered">
+                    <img src="static/images/perf_ptc_fr_sm.png" alt="PTC-FR (SM)" style="max-width: 100%;">
+                    <p class="has-text-grey" style="font-size: 0.8rem;">(c) PTC-FR</p>
+                  </div>
+                  <div class="column is-one-quarter has-text-centered">
+                    <img src="static/images/perf_ptc_mr_sm.png" alt="PTC-MR (SM)" style="max-width: 100%;">
+                    <p class="has-text-grey" style="font-size: 0.8rem;">(d) PTC-MR</p>
+                  </div>
                 </div>
-                <div class="column is-one-quarter has-text-centered">
-                  <img src="static/images/perf_cox2_ged.png" alt="Cox2 (GED)" style="max-width: 100%;">
-                  <p class="has-text-grey" style="font-size: 0.8rem;">(f) Cox2</p>
-                </div>
-                <div class="column is-one-quarter has-text-centered">
-                  <img src="static/images/perf_ptc_fr_ged.png" alt="PTC-FR (GED)" style="max-width: 100%;">
-                  <p class="has-text-grey" style="font-size: 0.8rem;">(g) PTC-FR</p>
-                </div>
-                <div class="column is-one-quarter has-text-centered">
-                  <img src="static/images/perf_ptc_mr_ged.png" alt="PTC-MR (GED)" style="max-width: 100%;">
-                  <p class="has-text-grey" style="font-size: 0.8rem;">(h) PTC-MR</p>
-                </div>
+                <p class="has-text-grey has-text-centered" style="font-size: 0.9rem;">Subgraph Matching (SM)</p>
               </div>
-              <p class="has-text-grey has-text-centered" style="font-size: 0.9rem;">Graph Edit Distance (GED)</p>
+              <div class="carousel-slide" id="slide-ged" style="display: none;">
+                <div class="columns is-mobile" style="margin: 0;">
+                  <div class="column is-one-quarter has-text-centered">
+                    <img src="static/images/perf_ptc_fm_ged.png" alt="PTC-FM (GED)" style="max-width: 100%;">
+                    <p class="has-text-grey" style="font-size: 0.8rem;">(e) PTC-FM</p>
+                  </div>
+                  <div class="column is-one-quarter has-text-centered">
+                    <img src="static/images/perf_cox2_ged.png" alt="Cox2 (GED)" style="max-width: 100%;">
+                    <p class="has-text-grey" style="font-size: 0.8rem;">(f) Cox2</p>
+                  </div>
+                  <div class="column is-one-quarter has-text-centered">
+                    <img src="static/images/perf_ptc_fr_ged.png" alt="PTC-FR (GED)" style="max-width: 100%;">
+                    <p class="has-text-grey" style="font-size: 0.8rem;">(g) PTC-FR</p>
+                  </div>
+                  <div class="column is-one-quarter has-text-centered">
+                    <img src="static/images/perf_ptc_mr_ged.png" alt="PTC-MR (GED)" style="max-width: 100%;">
+                    <p class="has-text-grey" style="font-size: 0.8rem;">(h) PTC-MR</p>
+                  </div>
+                </div>
+                <p class="has-text-grey has-text-centered" style="font-size: 0.9rem;">Graph Edit Distance (GED)</p>
+              </div>
             </div>
             <div class="has-text-centered" style="margin-top: 1rem;">
               <button class="button is-small is-rounded carousel-btn is-dark" onclick="showSlide('sm')">SM</button>
