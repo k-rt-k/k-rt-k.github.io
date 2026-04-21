@@ -32,6 +32,7 @@
   <title>DISCo: A Dense Subset Index for Collective Query Coverage</title>
 
   <link rel="icon" type="image/svg+xml" href="static/images/favicon.svg">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
   <link rel="stylesheet" href="static/css/bulma.min.css">
   <link rel="stylesheet" href="static/css/index.css">
   <link rel="preload" href="static/css/fontawesome.all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -42,6 +43,9 @@
   </noscript>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ez/sr4oOmcEIsx0" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRjXRprSKHnV2DlI" crossorigin="anonymous"
+    onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
   <script defer src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script defer src="static/js/fontawesome.all.min.js"></script>
   <script defer src="static/js/index.js"></script>
@@ -110,6 +114,12 @@
                     <span>Code</span>
                   </a>
                 </span>
+                <span class="link-block">
+                  <a href="#BibTeX" class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon"><i class="fas fa-quote-right"></i></span>
+                    <span>Cite</span>
+                  </a>
+                </span>
               </div>
             </div>
           </div>
@@ -163,10 +173,16 @@
           <h2 class="title is-3 has-text-centered">Coverage as a Submodular Objective</h2>
           <div class="content has-text-justified">
             <p>
-              We formalize coverage as a facility-location style objective: for a selected set S and query Q, the coverage is F(S, Q) = &Sigma;<sub>q&isin;Q</sub> max<sub>x&isin;&cup;<sub>d&isin;S</sub> D<sub>d</sub></sub> q<sup>T</sup>x. Unlike independent top-K retrieval which sums per-document MaxSim scores, this objective gives <strong>no additive credit</strong> for multiple documents redundantly covering the same query token. It is <strong>monotone and submodular</strong>&mdash;exhibiting diminishing returns&mdash;so a greedy algorithm achieves a (1&minus;1/e) &asymp; 63% approximation to the optimum.
+              We formalize coverage as a facility-location style objective. For a selected set $S$ and query $Q$, the coverage is:
             </p>
             <p>
-              The challenge: evaluating marginal gains over the full corpus is linear in corpus size. For MS-MARCO (8.8M passages), selecting K=10 items requires 88 million marginal gain computations&mdash;prohibitively slow for first-stage retrieval. Existing approaches like stochastic greedy or lazier-than-lazy greedy prune candidates in a query-agnostic manner, leading to poor tradeoffs.
+              $$F(S, Q) = \sum_{\boldsymbol{q} \in Q} \max_{\boldsymbol{x} \in \cup_{c \in S} X_c} \boldsymbol{q}^\top \boldsymbol{x}$$
+            </p>
+            <p>
+              Unlike independent top-$K$ retrieval which sums per-document $\mathrm{MaxSim}$ scores, this objective gives <strong>no additive credit</strong> for multiple documents redundantly covering the same query token. It is <strong>monotone and submodular</strong>&mdash;exhibiting diminishing returns&mdash;so a greedy algorithm achieves a $(1 - 1/e) \approx 63\%$ approximation to the optimum.
+            </p>
+            <p>
+              The challenge: evaluating marginal gains over the full corpus is linear in corpus size. For MS-MARCO (8.8M passages), selecting $K{=}10$ items requires 88 million marginal gain computations&mdash;prohibitively slow for first-stage retrieval. Existing approaches like stochastic greedy or lazier-than-lazy greedy prune candidates in a query-agnostic manner, leading to poor tradeoffs.
             </p>
           </div>
 
@@ -176,15 +192,21 @@
               DISCo solves this in two steps:
             </p>
             <p>
-              <strong>1. Separating state dependence.</strong> We rewrite the marginal gain as an inner product in an augmented &ldquo;lifted&rdquo; vector space. The query token y is augmented with its current coverage value: &ycirc;<sub>S</sub> = [y; F(S,y)] &isin; &Ropf;<sup>d+1</sup>. The corpus token x is augmented as &xcirc; = [x; &minus;1] &isin; &Ropf;<sup>d+1</sup>. The marginal gain then becomes [&ycirc;<sub>S</sub><sup>T</sup>&xcirc;]<sub>+</sub>. Crucially, this transfers all dependency on the current set S into the query representation, while the corpus representation &xcirc; remains static and can be preprocessed once.
+              <strong>1. Separating state dependence.</strong> We rewrite the marginal gain as an inner product in an augmented &ldquo;lifted&rdquo; vector space. The query token $\boldsymbol{q}$ is augmented with its current coverage value: $\widehat{\boldsymbol{q}}_S = [\boldsymbol{q};\; F(S,\boldsymbol{q})] \in \mathbb{R}^{d+1}$. The corpus token $\boldsymbol{x}$ is augmented as $\widehat{\boldsymbol{x}} = [\boldsymbol{x};\; {-1}] \in \mathbb{R}^{d+1}$. The marginal gain then becomes $[\widehat{\boldsymbol{q}}_S^\top \widehat{\boldsymbol{x}}]_+$. Crucially, this transfers all dependency on the current set $S$ into the query representation, while the corpus representation $\widehat{\boldsymbol{x}}$ remains static and can be preprocessed once.
             </p>
             <p>
-              <strong>2. Handling the hinge with random projections.</strong> The [&middot;]<sub>+</sub> hinge prevents direct ANN indexing. We resolve this by sampling random hyperplanes w &sim; N(0, I<sub>d+1</sub>) and defining a feature map &Phi;<sub>w</sub>(u) = [u; sign(w<sup>T</sup>u)&middot;u]/&radic;2 such that &Phi;<sub>w</sub>(u)<sup>T</sup>&Phi;<sub>w</sub>(v) = [u<sup>T</sup>v]<sub>+</sub> with probability &ge; 0.5. With R &ge; 8 hyperplanes (for queries with |Q| &lt; 32), the approximation recovers the true marginal gain with probability &ge; 87.5%. The resulting expression closely resembles the standard MaxSim score, making it amenable to indexing.
+              <strong>2. Handling the hinge with random projections.</strong> The $[\cdot]_+$ hinge prevents direct ANN indexing. We resolve this by sampling random hyperplanes $\boldsymbol{w} \sim \mathcal{N}(0, \boldsymbol{I}_{d+1})$ and defining a feature map $\Phi_{\boldsymbol{w}}: \mathbb{R}^{d+1} \to \mathbb{R}^{2(d+1)}$ as:
+            </p>
+            <p>
+              $$\Phi_{\boldsymbol{w}}(\boldsymbol{u}) = \big[\boldsymbol{u};\; \mathrm{sign}(\boldsymbol{w}^\top\boldsymbol{u})\cdot\boldsymbol{u}\big] \big/ \sqrt{2}$$
+            </p>
+            <p>
+              such that $\Phi_{\boldsymbol{w}}(\boldsymbol{u})^\top \Phi_{\boldsymbol{w}}(\boldsymbol{v}) = [\boldsymbol{u}^\top\boldsymbol{v}]_+$ with probability $p \ge 0.5$. With $R \ge 8$ hyperplanes (for queries with $|Q| < 32$), the approximation recovers the true marginal gain with probability $\ge 87.5\%$. The resulting expression closely resembles the standard $\mathrm{MaxSim}$ score, making it amenable to indexing.
             </p>
           </div>
 
           <div class="has-text-centered" style="margin: 2rem 0;">
-            <img src="static/images/disco_system.png" alt="DISCo system architecture" style="max-width: 100%;">
+            <img src="static/images/disco_system.svg" alt="DISCo system architecture" style="max-width: 100%;">
             <p class="has-text-grey" style="margin-top: 0.5rem; font-size: 0.9rem;">
               <strong>Figure 2.</strong> The DISCo retrieval pipeline. Each greedy step is replaced by an approximate nearest-neighbor search in the lifted space. Each replica index has a token-level IVF, with each token stored as a centroid and quantized residual. Retrieval consists of a token-level IVF lookup followed by progressive levels of candidate reranking.
             </p>
@@ -196,36 +218,44 @@
               We compare DISCo against greedy submodular solvers (Exact Greedy, Lazy Greedy, Stochastic Greedy, Lazier-than-Lazy Greedy) and traditional multi-vector retrieval engines (PLAID, MUVERA, WARP) across seven large-scale benchmarks: MS-MARCO (8.8M passages), HotpotQA, FEVER, and four LoTTE domains.
             </p>
             <p>
-              DISCo achieves the best coverage vs. query latency tradeoff&mdash;matching greedy baselines in coverage quality while being over <strong>100&times; faster</strong> on MS-MARCO. On HotpotQA with gold set size |S<sub>gold</sub>| = 2, DISCo achieves the lowest coverage error (0.59 vs. 0.63 for Exact Greedy and 0.98 for PLAID) and the highest MAP on gold sets (0.84 vs. 0.83 for Exact Greedy and 0.81 for PLAID). Stochastic and lazier-than-lazy variants show poor tradeoffs due to their query-agnostic random pruning.
+              DISCo achieves the best coverage vs. query latency tradeoff&mdash;matching greedy baselines in coverage quality while being over $100\times$ faster on MS-MARCO. On HotpotQA with gold set size $|S_{\text{gold}}| = 2$, DISCo achieves the lowest coverage error (0.59 vs. 0.63 for Exact Greedy and 0.98 for PLAID) and the highest MAP on gold sets (0.84 vs. 0.83 for Exact Greedy and 0.81 for PLAID). Stochastic and lazier-than-lazy variants show poor tradeoffs due to their query-agnostic random pruning.
             </p>
           </div>
 
-          <div class="columns is-multiline" style="margin: 2rem 0;">
-            <div class="column is-half has-text-centered">
-              <img src="static/images/msmarco_coverage.png" alt="MS-MARCO coverage vs latency" style="max-width: 100%;">
-              <p class="has-text-grey" style="margin-top: 0.5rem; font-size: 0.9rem;">
-                <strong>Figure 3.</strong> Coverage vs. latency on MS-MARCO.
-              </p>
+          <div class="has-text-centered" style="margin: 2rem 0 0.5rem;">
+            <img src="static/images/plot2_legend.png" alt="Legend" style="max-width: 50%;">
+          </div>
+          <div class="columns is-multiline" style="margin: 0;">
+            <div class="column is-one-quarter has-text-centered">
+              <img src="static/images/msmarco_plot2.png" alt="MS-MARCO" style="max-width: 100%;">
+              <p class="has-text-grey" style="font-size: 0.85rem;">(a) MS-MARCO</p>
             </div>
-            <div class="column is-half has-text-centered">
-              <img src="static/images/hotpotqa_coverage.png" alt="HotpotQA coverage vs latency" style="max-width: 100%;">
-              <p class="has-text-grey" style="margin-top: 0.5rem; font-size: 0.9rem;">
-                <strong>Figure 4.</strong> Coverage vs. latency on HotpotQA.
-              </p>
+            <div class="column is-one-quarter has-text-centered">
+              <img src="static/images/hotpotqa_plot2.png" alt="HotpotQA" style="max-width: 100%;">
+              <p class="has-text-grey" style="font-size: 0.85rem;">(b) HotpotQA</p>
             </div>
-            <div class="column is-half has-text-centered">
-              <img src="static/images/fever_coverage.png" alt="FEVER coverage vs latency" style="max-width: 100%;">
-              <p class="has-text-grey" style="margin-top: 0.5rem; font-size: 0.9rem;">
-                <strong>Figure 5.</strong> Coverage vs. latency on FEVER.
-              </p>
+            <div class="column is-one-quarter has-text-centered">
+              <img src="static/images/fever_plot2.png" alt="FEVER" style="max-width: 100%;">
+              <p class="has-text-grey" style="font-size: 0.85rem;">(c) FEVER</p>
             </div>
-            <div class="column is-half has-text-centered">
-              <img src="static/images/hotpotqa_histogram.png" alt="Retrieval rank histogram on HotpotQA" style="max-width: 100%;">
-              <p class="has-text-grey" style="margin-top: 0.5rem; font-size: 0.9rem;">
-                <strong>Figure 6.</strong> Rank of the last relevant item retrieved on HotpotQA. DISCo retrieves nearly all relevant items within 2&ndash;3 rounds, comparable to exact greedy.
-              </p>
+            <div class="column is-one-quarter has-text-centered">
+              <img src="static/images/pooled_plot2.png" alt="Pooled" style="max-width: 100%;">
+              <p class="has-text-grey" style="font-size: 0.85rem;">(d) Pooled</p>
             </div>
           </div>
+          <p class="has-text-grey has-text-centered" style="margin-top: 0.5rem; font-size: 0.9rem;">
+            <strong>Figure 3.</strong> Trade-off between query latency and average coverage objective across benchmarks.
+          </p>
+
+          <div class="has-text-centered" style="margin: 2.5rem 0 0.5rem;">
+            <img src="static/images/plot3_legend.png" alt="Legend" style="max-width: 40%;">
+          </div>
+          <div class="has-text-centered">
+            <img src="static/images/hotpotqa_histogram_plot3.png" alt="Retrieval rank histogram on HotpotQA" style="max-width: 50%;">
+          </div>
+          <p class="has-text-grey has-text-centered" style="margin-top: 0.5rem; font-size: 0.9rem;">
+            <strong>Figure 4.</strong> Rank of the last relevant item retrieved on HotpotQA. DISCo retrieves nearly all relevant items within 2&ndash;3 rounds, comparable to exact greedy.
+          </p>
 
 
         </div>
