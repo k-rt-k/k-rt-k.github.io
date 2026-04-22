@@ -2,10 +2,487 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="refresh" content="0; url=https://openreview.net/forum?id=HQcCd0laFq&referrer=%5BAuthor%20Console%5D(%2Fgroup%3Fid%3DICLR.cc%2F2026%2FConference%2FAuthors%23your-submissions)">
-  <title>GraphHash - Redirecting to OpenReview</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="title" content="GHash: Exchangeability of GNN Representations with Applications to Graph Retrieval">
+  <meta name="description" content="GHash discovers exchangeability in GNN embeddings and uses it for efficient locality-sensitive hashing of graphs.">
+  <meta name="keywords" content="graph neural networks, exchangeability, locality-sensitive hashing, graph retrieval, graph similarity">
+  <meta name="author" content="Kartik Nair, Indradyumna Roy, Soumen Chakrabarti, Anirban Dasgupta, Abir De">
+  <meta name="robots" content="index, follow">
+
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="GHash: Exchangeability of GNN Representations with Applications to Graph Retrieval">
+  <meta property="og:description" content="GHash discovers exchangeability in GNN embeddings and uses it for efficient locality-sensitive hashing of graphs.">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="GHash: Exchangeability of GNN Representations with Applications to Graph Retrieval">
+  <meta name="twitter:description" content="GHash discovers exchangeability in GNN embeddings and uses it for efficient locality-sensitive hashing of graphs.">
+
+  <meta name="citation_title" content="Exchangeability of GNN Representations with Applications to Graph Retrieval">
+  <meta name="citation_author" content="Nair, Kartik">
+  <meta name="citation_author" content="Roy, Indradyumna">
+  <meta name="citation_author" content="Chakrabarti, Soumen">
+  <meta name="citation_author" content="Dasgupta, Anirban">
+  <meta name="citation_author" content="De, Abir">
+  <meta name="citation_publication_date" content="2026">
+  <meta name="citation_conference_title" content="ICLR 2026">
+
+  <title>GHash: Exchangeability of GNN Representations with Applications to Graph Retrieval</title>
+
+  <link rel="icon" type="image/svg+xml" href="static/images/favicon.svg">
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+  <link rel="preload" href="static/css/fontawesome.all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript>
+    <link rel="stylesheet" href="static/css/fontawesome.all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  </noscript>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script defer src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="static/js/fontawesome.all.min.js"></script>
+  <script defer src="static/js/index.js"></script>
+  <script>
+    MathJax = { tex: { inlineMath: [['$','$'], ['\\(','\\)']] } };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+  <script>
+    // Prevent flash: apply stored theme before paint
+    (function() {
+      var t = localStorage.getItem('theme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (t === 'dark' || (!t && prefersDark)) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    })();
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ScholarlyArticle",
+    "headline": "Exchangeability of GNN Representations with Applications to Graph Retrieval",
+    "description": "GHash discovers exchangeability in GNN embeddings and uses it for efficient locality-sensitive hashing of graphs.",
+    "author": [
+      {"@type": "Person", "name": "Kartik Nair", "affiliation": {"@type": "Organization", "name": "Carnegie Mellon University"}},
+      {"@type": "Person", "name": "Indradyumna Roy", "affiliation": {"@type": "Organization", "name": "IIT Bombay"}},
+      {"@type": "Person", "name": "Soumen Chakrabarti", "affiliation": {"@type": "Organization", "name": "IIT Bombay"}},
+      {"@type": "Person", "name": "Anirban Dasgupta", "affiliation": {"@type": "Organization", "name": "IIT Gandhinagar"}},
+      {"@type": "Person", "name": "Abir De", "affiliation": {"@type": "Organization", "name": "IIT Bombay"}}
+    ],
+    "datePublished": "2026",
+    "publisher": {"@type": "Organization", "name": "ICLR"},
+    "isAccessibleForFree": true
+  }
+  </script>
 </head>
 <body>
-  <p>Redirecting to <a href="https://openreview.net/forum?id=HQcCd0laFq&referrer=%5BAuthor%20Console%5D(%2Fgroup%3Fid%3DICLR.cc%2F2026%2FConference%2FAuthors%23your-submissions)">OpenReview</a>...</p>
+
+  <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+    <svg class="moon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    <svg class="sun-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+  </button>
+
+  <button class="scroll-to-top" onclick="scrollToTop()" title="Scroll to top" aria-label="Scroll to top">
+    <i class="fas fa-chevron-up"></i>
+  </button>
+
+  <main id="main-content">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column has-text-centered">
+            <h1 class="title is-1 publication-title">Exchangeability of GNN Representations with Applications to Graph Retrieval</h1>
+            <div class="is-size-5 publication-authors">
+              <span class="author-block"><a href="#" target="_blank">Kartik Nair</a><sup>1,2</sup>,</span>
+              <span class="author-block"><a href="#" target="_blank">Indradyumna Roy</a><sup>1</sup>,</span>
+              <span class="author-block"><a href="#" target="_blank">Soumen Chakrabarti</a><sup>1</sup>,</span>
+              <span class="author-block"><a href="#" target="_blank">Anirban Dasgupta</a><sup>3</sup>,</span>
+              <span class="author-block"><a href="#" target="_blank">Abir De</a><sup>1</sup></span>
+            </div>
+
+            <div class="is-size-5 publication-authors">
+              <span class="author-block"><sup>1</sup>IIT Bombay &nbsp; <sup>2</sup>Carnegie Mellon University &nbsp; <sup>3</sup>IIT Gandhinagar<br><strong>ICLR 2026 (Oral)</strong></span>
+            </div>
+
+            <div class="column has-text-centered">
+              <div class="publication-links">
+                <span class="link-block">
+                  <a href="static/GraphHash.pdf" target="_blank" class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                    <span>PDF</span>
+                  </a>
+                </span>
+                <span class="link-block">
+                  <a href="https://github.com/k-rt-k/GraphHash" class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon"><i class="fab fa-github"></i></span>
+                    <span>Code</span>
+                  </a>
+                </span>
+                <span class="link-block">
+                  <a href="#BibTeX" class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon"><i class="fas fa-quote-right"></i></span>
+                    <span>Cite</span>
+                  </a>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Abstract -->
+  <section class="section hero is-light">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">Abstract</h2>
+          <div class="content has-text-justified">
+            <p>
+              We discover a probabilistic symmetry, called exchangeability, in graph neural networks (GNNs). Specifically, we show that the trained node embeddings computed using a large family of graph neural networks, learned under standard optimization tools, are exchangeable random variables. This implies that the probability density of the node embeddings remains invariant with respect to a permutation applied on their dimension axis. This results in identical distribution across the elements of the graph representations. Such a property enables approximation of transportation-based graph similarities by Euclidean similarities between the sorted embedding elements in fixed dimension. This allows us to propose a unified locality-sensitive hashing (LSH) framework that supports diverse relevance measures for graphs. Experiments show that our method provides more effective LSH than baselines.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Blog-style summary -->
+  <section class="section">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column is-four-fifths">
+
+          <h2 class="title is-3 has-text-centered">A New Axis of Symmetry in Neural Representations</h2>
+          <div class="content has-text-justified">
+            <p>
+              We discover that trained GNN embeddings exhibit <strong>exchangeability</strong>&mdash;a probabilistic symmetry where the joint distribution $p(\mathbf{X}) = p(\mathbf{X}\boldsymbol{\pi})$ is invariant under any permutation $\boldsymbol{\pi}$ applied to the dimension axis. If a GNN produces a $D$-dimensional embedding for each node, all $D$ coordinate values share the same marginal distribution. This is not a symmetry of the input data or the architecture&mdash;it is a symmetry in the <em>neural representation space</em> itself.
+            </p>
+          </div>
+
+          <div class="has-text-centered" style="margin: 2rem 0;">
+            <video class="video-light" autoplay loop muted playsinline style="max-width: 90%; border-radius: 6px;">
+              <source src="static/videos/anim1_permutation.mp4" type="video/mp4">
+            </video>
+            <video class="video-dark" autoplay loop muted playsinline style="max-width: 90%; border-radius: 6px;">
+              <source src="static/videos/anim1_permutation_dark.mp4" type="video/mp4">
+            </video>
+            <p class="has-text-grey" style="margin-top: 0.5rem; font-size: 0.85rem;">
+              A dimension permutation $\boldsymbol{\pi}$ rearranges the embedding coordinates of every node identically&mdash;the joint distribution remains unchanged.
+            </p>
+          </div>
+
+          <h2 class="title is-3 has-text-centered">The Mechanism</h2>
+          <div class="content has-text-justified">
+            <p>
+              How does exchangeability arise? We trace it to three conditions that hold for a large family of GNNs trained with standard optimizers:
+            </p>
+            <p>
+              <strong>1. Permutation-induced parameter transformations.</strong> For any dimension permutation $\boldsymbol{\pi}$, there exists a bijective transformation $\Gamma_{\boldsymbol{\pi}}$ on the network parameters that induces the corresponding permutation on embeddings: $\mathbf{X} \mapsto \mathbf{X}\boldsymbol{\pi}$. This transformation has unit Jacobian determinant.
+            </p>
+          </div>
+
+          <div class="has-text-centered" style="margin: 1.5rem 0;">
+            <video class="video-light" autoplay loop muted playsinline style="max-width: 90%; border-radius: 6px;">
+              <source src="static/videos/anim2_node_swap.mp4" type="video/mp4">
+            </video>
+            <video class="video-dark" autoplay loop muted playsinline style="max-width: 90%; border-radius: 6px;">
+              <source src="static/videos/anim2_node_swap_dark.mp4" type="video/mp4">
+            </video>
+            <p class="has-text-grey" style="margin-top: 0.5rem; font-size: 0.85rem;">
+              The bijective transformation $\Gamma_{\boldsymbol{\pi}}$ permutes weight columns/rows so that the output embeddings undergo the same dimension permutation.
+            </p>
+          </div>
+
+          <div class="content has-text-justified">
+            <p>
+              <strong>2. Symmetry at initialization.</strong> IID parameter initialization ensures $p(\theta_0) = p(\Gamma_{\boldsymbol{\pi}}(\theta_0))$ for all permutations $\boldsymbol{\pi}$. All permuted parameter configurations are equally likely at the start.
+            </p>
+            <p>
+              <strong>3. Gradient and Optimizer Equivariance.</strong> Since the loss function (transportation distance) is permutation-invariant, the gradient is equivariant under $\Gamma_{\boldsymbol{\pi}}$. If parameters start as $\Gamma_{\boldsymbol{\pi}}(\theta_0)$, gradient updates also undergo the same transformation. So $p(\theta_t) = p(\Gamma_{\boldsymbol{\pi}}(\theta_t))$ for all training epochs $t \ge 0$.
+            </p>
+          </div>
+
+          <div class="has-text-centered" style="margin: 1.5rem 0;">
+            <video class="video-light" autoplay loop muted playsinline style="max-width: 90%; border-radius: 6px;">
+              <source src="static/videos/anim3_backward_swap.mp4" type="video/mp4">
+            </video>
+            <video class="video-dark" autoplay loop muted playsinline style="max-width: 90%; border-radius: 6px;">
+              <source src="static/videos/anim3_backward_swap_dark.mp4" type="video/mp4">
+            </video>
+            <p class="has-text-grey" style="margin-top: 0.5rem; font-size: 0.85rem;">
+              Gradient equivariance: the backward pass preserves the permutation symmetry established at initialization.
+            </p>
+          </div>
+
+          <div class="content has-text-justified">
+            <p>
+              Together: exchangeability of parameters at initialization is preserved throughout training and propagates to the embeddings.
+            </p>
+          </div>
+
+          <h2 class="title is-3 has-text-centered">Some Implications</h2>
+
+          <div class="distn-carousel" style="margin: 2rem 0;">
+            <div class="figure-group">
+            <div id="distn-cox2">
+              <div class="columns is-mobile" style="margin: 0; align-items: center;">
+                <div class="column is-one-quarter has-text-centered">
+                  <img src="static/images/distn_cox2_graph.png" alt="COX2 graph" style="max-width: 100%;">
+                  <p class="has-text-grey" style="font-size: 0.8rem;">Graph</p>
+                </div>
+                <div class="column is-one-quarter has-text-centered">
+                  <img src="static/images/distn_cox2_epoch0.png" alt="Epoch 0" style="max-width: 100%;">
+                  <p class="has-text-grey" style="font-size: 0.8rem;">Epoch 0</p>
+                </div>
+                <div class="column is-one-quarter has-text-centered">
+                  <img src="static/images/distn_cox2_epoch8.png" alt="Epoch 8" style="max-width: 100%;">
+                  <p class="has-text-grey" style="font-size: 0.8rem;">Epoch 8</p>
+                </div>
+                <div class="column is-one-quarter has-text-centered">
+                  <img src="static/images/distn_cox2_epoch20.png" alt="Epoch 20" style="max-width: 100%;">
+                  <p class="has-text-grey" style="font-size: 0.8rem;">Epoch 20</p>
+                </div>
+              </div>
+            </div>
+            <div id="distn-ptcfr" style="display: none;">
+              <div class="columns is-mobile" style="margin: 0; align-items: center;">
+                <div class="column is-one-quarter has-text-centered">
+                  <img src="static/images/distn_ptcfr_graph.png" alt="PTC-FR graph" style="max-width: 100%;">
+                  <p class="has-text-grey" style="font-size: 0.8rem;">Graph</p>
+                </div>
+                <div class="column is-one-quarter has-text-centered">
+                  <img src="static/images/distn_ptcfr_epoch0.png" alt="Epoch 0" style="max-width: 100%;">
+                  <p class="has-text-grey" style="font-size: 0.8rem;">Epoch 0</p>
+                </div>
+                <div class="column is-one-quarter has-text-centered">
+                  <img src="static/images/distn_ptcfr_epoch8.png" alt="Epoch 8" style="max-width: 100%;">
+                  <p class="has-text-grey" style="font-size: 0.8rem;">Epoch 8</p>
+                </div>
+                <div class="column is-one-quarter has-text-centered">
+                  <img src="static/images/distn_ptcfr_epoch20.png" alt="Epoch 20" style="max-width: 100%;">
+                  <p class="has-text-grey" style="font-size: 0.8rem;">Epoch 20</p>
+                </div>
+              </div>
+            </div>
+            </div>
+            <div class="has-text-centered" style="margin-top: 0.75rem;">
+              <button class="button is-small is-rounded distn-btn is-dark" onclick="showDistn('cox2')">COX2</button>
+              <button class="button is-small is-rounded distn-btn is-light" onclick="showDistn('ptcfr')">PTC-FR</button>
+            </div>
+            <p class="has-text-grey has-text-centered" style="margin-top: 0.5rem; font-size: 0.9rem;">
+              <strong>Figure 1.</strong> Empirical probability density of individual GNN embedding dimensions across training epochs. The marginal distributions remain identical at initialisation and throughout training.
+            </p>
+          </div>
+          <script>
+            function showDistn(dataset) {
+              document.getElementById('distn-cox2').style.display = dataset === 'cox2' ? 'block' : 'none';
+              document.getElementById('distn-ptcfr').style.display = dataset === 'ptcfr' ? 'block' : 'none';
+              document.querySelectorAll('.distn-btn').forEach(btn => {
+                var name = btn.textContent.trim().toLowerCase().replace('-', '');
+                btn.classList.toggle('is-dark', name === dataset);
+                btn.classList.toggle('is-light', name !== dataset);
+              });
+            }
+          </script>
+
+          <div class="figure-group" style="margin: 2rem 0;">
+            <div class="columns" style="margin: 0;">
+              <div class="column is-half has-text-centered">
+                <img src="static/images/singular_ratio_sm.png" alt="Singular value ratio Cox2 (SM)" style="max-width: 100%;">
+                <p class="has-text-grey" style="font-size: 0.85rem;">(a) Cox2 (SM)</p>
+              </div>
+              <div class="column is-half has-text-centered">
+                <img src="static/images/singular_ratio_ged.png" alt="Singular value ratio Cox2 (GED)" style="max-width: 100%;">
+                <p class="has-text-grey" style="font-size: 0.85rem;">(b) Cox2 (GED)</p>
+              </div>
+            </div>
+          </div>
+          <p class="has-text-grey has-text-centered" style="font-size: 0.9rem;">
+            <strong>Figure 2.</strong> The ratio $\sigma_1^2 / (\sum_i \sigma_i^2)$ of the top singular value converges to 1 across training, confirming that $\mathbb{E}[\mathbf{X}]$ collapses to rank one&mdash;a consequence of exchangeability.
+          </p>
+
+          <hr style="margin: 3rem 0;">
+          <h2 class="title is-3 has-text-centered">The Graph Retrieval Problem</h2>
+          <div class="content has-text-justified">
+            <p>
+              Finding the most similar graphs in a large corpus is a fundamental problem in cheminformatics, social network analysis, and program analysis. Recent work has shown that <strong>transportation-based similarities</strong>&mdash;which compute optimal alignments between node embeddings of two graphs&mdash;significantly outperform simpler aggregation methods and graph kernels. These distances unify multiple relevance measures: the hinge cost $\rho(\cdot) = [\cdot]_+$ captures subgraph isomorphism, while asymmetric costs $\rho(\cdot) = c_{\ominus}[\cdot]_+ + c_{\oplus}[-\cdot]_+$ capture graph edit distance.
+            </p>
+            <p>
+              However, exact computation requires solving an optimal assignment over $n$ nodes, scaling as $O(n^3)$. Even Sinkhorn approximations need $O(n^2)$ per comparison. The challenge: transportation distances cannot be decomposed into independent per-node comparisons and readily separated into corpus and query terms. This makes standard indexing (LSH, IVF) inapplicable.
+            </p>
+          </div>
+
+          <h2 class="title is-3 has-text-centered">From Transportation to Sorting</h2>
+          <div class="content has-text-justified">
+            <p>
+              Exchangeability unlocks an elegant computational shortcut. By restricting the transportation problem to a single dimension $d \in [D]$, it reduces to optimal transport between scalars&mdash;trivially solved by sorting (the rearrangement inequality). Since the score function $s(\cdot)$ is concave, the per-dimension similarity simplifies to: $\mathrm{sim}_d(G_c, G_q) = s\big(\mathrm{sort}(\mathbf{X}^{(q)}[:,d]) - \mathrm{sort}(\mathbf{X}^{(c)}[:,d])\big)$.
+            </p>
+            <p>
+              Because exchangeability yields an identical distribution of the per-dimension similarity across all $D$ dimensions, we get concentration:
+            </p>
+            <blockquote style="background: #f5f5f5; border-left: 4px solid #363636; padding: 1rem 1.25rem; margin: 1rem 0;">
+              <p style="margin: 0;">
+                <strong>Proposition.</strong> For any $\epsilon > 0$, $\delta > 0$, setting $D > \frac{1}{\epsilon^2 \delta}$ ensures that, for some $\beta_0 = O_D(1)$:
+              </p>
+              <p style="margin: 0.5rem 0 0; text-align: center;">
+                $$\Pr\left(\left| \frac{\mathrm{sim}(G_c, G_q)}{D} - \mathrm{sim}_d(G_c, G_q)\right| \le \epsilon\right) \ge 1 - \beta_0 \delta$$
+              </p>
+            </blockquote>
+            <p>
+              This reduces the $O(n^3)$ transportation problem to $D$ independent $O(n \log n)$ sorting problems. Each dimension's sorted embedding vector is then projected into Fourier space and hashed using standard random hyperplane LSH, with per-dimension hash tables aggregated for retrieval. This is the <strong>first principled LSH framework for asymmetric transportation-based similarities</strong>.
+            </p>
+          </div>
+
+          <div class="has-text-centered" style="margin: 2rem 0;">
+            <div class="figure-group">
+              <img src="static/images/ghash_method.png" alt="GHash methodology overview" style="max-width: 100%;">
+            </div>
+            <p class="has-text-grey" style="margin-top: 0.5rem; font-size: 0.9rem;">
+              <strong>Figure 3.</strong> Overview of the GHash framework. Exchangeability enables per-dimension sorting to approximate transportation distances; Fourier-based LSH with multiple hash tables enables sublinear-time retrieval.
+            </p>
+          </div>
+
+          <h2 class="title is-3 has-text-centered">Results</h2>
+          <div class="content has-text-justified">
+            <p>
+              We evaluate on four TUDatasets (COX2, PTC-FM, PTC-FR, PTC-MR) with 500 query graphs and 100,000 corpus graphs each, measuring MAP under subgraph matching (SM, via VF2) and graph edit distance (GED, insertion cost=1, deletion cost=2).
+            </p>
+            <p>
+              GHash consistently achieves the <strong>highest MAP</strong> across all datasets and both tasks. FourierHashNet, the previous best approach, plateaus below 50% MAP on several SM tasks because it relies on mean-pooled representations that discard multi-vector structure. Random Hyperplanes show high variance and poor SM performance. Symmetric methods (FAISS-IVF, DiskANN) are fundamentally incompatible with asymmetric relevance measures like subgraph isomorphism.
+            </p>
+          </div>
+
+          <div class="figure-group" style="margin: 2rem 0 0.5rem;">
+            <div class="has-text-centered" style="margin-bottom: 0.5rem;">
+              <img src="static/images/perf_legend.png" alt="Legend" style="max-width: 60%;">
+            </div>
+            <div class="results-carousel" style="position: relative;">
+              <div class="carousel-slide" id="slide-sm">
+                <div class="columns is-mobile" style="margin: 0;">
+                  <div class="column is-one-quarter has-text-centered">
+                    <img src="static/images/perf_ptc_fm_sm.png" alt="PTC-FM (SM)" style="max-width: 100%;">
+                    <p class="has-text-grey" style="font-size: 0.8rem;">(a) PTC-FM</p>
+                  </div>
+                  <div class="column is-one-quarter has-text-centered">
+                    <img src="static/images/perf_cox2_sm.png" alt="Cox2 (SM)" style="max-width: 100%;">
+                    <p class="has-text-grey" style="font-size: 0.8rem;">(b) Cox2</p>
+                  </div>
+                  <div class="column is-one-quarter has-text-centered">
+                    <img src="static/images/perf_ptc_fr_sm.png" alt="PTC-FR (SM)" style="max-width: 100%;">
+                    <p class="has-text-grey" style="font-size: 0.8rem;">(c) PTC-FR</p>
+                  </div>
+                  <div class="column is-one-quarter has-text-centered">
+                    <img src="static/images/perf_ptc_mr_sm.png" alt="PTC-MR (SM)" style="max-width: 100%;">
+                    <p class="has-text-grey" style="font-size: 0.8rem;">(d) PTC-MR</p>
+                  </div>
+                </div>
+                <p class="has-text-grey has-text-centered" style="font-size: 0.9rem;">Subgraph Matching (SM)</p>
+              </div>
+              <div class="carousel-slide" id="slide-ged" style="display: none;">
+                <div class="columns is-mobile" style="margin: 0;">
+                  <div class="column is-one-quarter has-text-centered">
+                    <img src="static/images/perf_ptc_fm_ged.png" alt="PTC-FM (GED)" style="max-width: 100%;">
+                    <p class="has-text-grey" style="font-size: 0.8rem;">(e) PTC-FM</p>
+                  </div>
+                  <div class="column is-one-quarter has-text-centered">
+                    <img src="static/images/perf_cox2_ged.png" alt="Cox2 (GED)" style="max-width: 100%;">
+                    <p class="has-text-grey" style="font-size: 0.8rem;">(f) Cox2</p>
+                  </div>
+                  <div class="column is-one-quarter has-text-centered">
+                    <img src="static/images/perf_ptc_fr_ged.png" alt="PTC-FR (GED)" style="max-width: 100%;">
+                    <p class="has-text-grey" style="font-size: 0.8rem;">(g) PTC-FR</p>
+                  </div>
+                  <div class="column is-one-quarter has-text-centered">
+                    <img src="static/images/perf_ptc_mr_ged.png" alt="PTC-MR (GED)" style="max-width: 100%;">
+                    <p class="has-text-grey" style="font-size: 0.8rem;">(h) PTC-MR</p>
+                  </div>
+                </div>
+                <p class="has-text-grey has-text-centered" style="font-size: 0.9rem;">Graph Edit Distance (GED)</p>
+              </div>
+            </div>
+            <div class="has-text-centered" style="margin-top: 1rem;">
+              <button class="button is-small is-rounded carousel-btn is-dark" onclick="showSlide('sm')">SM</button>
+              <button class="button is-small is-rounded carousel-btn is-light" onclick="showSlide('ged')">GED</button>
+            </div>
+          </div>
+          <p class="has-text-grey has-text-centered" style="margin-top: 0.5rem; font-size: 0.9rem;">
+            <strong>Figure 4.</strong> MAP vs. #retrieved graphs across four datasets. Toggle between Subgraph Matching and Graph Edit Distance.
+          </p>
+          <script>
+            function showSlide(task) {
+              document.getElementById('slide-sm').style.display = task === 'sm' ? 'block' : 'none';
+              document.getElementById('slide-ged').style.display = task === 'ged' ? 'block' : 'none';
+              document.querySelectorAll('.carousel-btn').forEach(btn => {
+                btn.classList.toggle('is-dark', btn.textContent.trim().toLowerCase() === task);
+                btn.classList.toggle('is-light', btn.textContent.trim().toLowerCase() !== task);
+              });
+            }
+          </script>
+
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BibTeX -->
+  <section class="section hero is-light" id="BibTeX">
+    <div class="container is-max-desktop content">
+      <div class="bibtex-header">
+        <h2 class="title">BibTeX</h2>
+        <button class="copy-bibtex-btn" onclick="copyBibTeX()" title="Copy BibTeX to clipboard">
+          <i class="fas fa-copy"></i>
+          <span class="copy-text">Copy</span>
+        </button>
+      </div>
+      <pre id="bibtex-code"><code>@inproceedings{nair2026exchangeability,
+  title={Exchangeability of {GNN} Representations with Applications to Graph Retrieval},
+  author={Nair, Kartik and Roy, Indradyumna and Chakrabarti, Soumen and Dasgupta, Anirban and De, Abir},
+  booktitle={Proceedings of the International Conference on Learning Representations (ICLR)},
+  year={2026}
+}</code></pre>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container is-max-desktop has-text-centered">
+      <p class="is-size-5">View: <a href="static/poster.pdf" target="_blank">ICLR Poster</a>, <span style="opacity: 0.5;">Talk Slides (soon)</span></p>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-8">
+          <div class="content">
+            <p>
+              This page was built using the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">Academic Project Page Template</a>.
+              Licensed under <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC BY-SA 4.0</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('themeToggle').addEventListener('click', function() {
+      var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      if (isDark) {
+        document.documentElement.removeAttribute('data-theme');
+        localStorage.setItem('theme', 'light');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
+      }
+    });
+  </script>
 </body>
 </html>
